@@ -1,0 +1,81 @@
+export const siteConfig = {
+  name: "স্বাদের ভুবন",
+  englishName: "Sader Vubon",
+  url: "https://sadervubon.com",
+  tagline: "Best in taste & purity",
+  description: "গ্রাম-বাংলার খাঁটি ও বিশুদ্ধ খাদ্য সামগ্রীর নির্ভরযোগ্য প্রতিষ্ঠান। সুন্দরবনের প্রাকৃতিক চাকভাঙা মধু, খাঁটি খেজুরের গুড়, ঘানির সরিষার তেল, মুখরোচক ঘরোয়া আচার ও রাজশাহীর সেরা আম। ১০০% বিশুদ্ধ অর্গানিক পণ্যের নিশ্চয়তা।",
+  keywords: [
+    "স্বাদের ভুবন",
+    "Sader Vubon",
+    "Sadervubon",
+    "Sadervubon.com",
+    "খাঁটি মধু",
+    "সুন্দরবনের মধু",
+    "চাকভাঙা মধু",
+    "খেজুরের গুড়",
+    "পাটালি গুড়",
+    "ঝোলা গুড়",
+    "আখের গুড়",
+    "ঘানির সরিষার তেল",
+    "ঘরোয়া আচার",
+    "বরই আচার",
+    "তেঁতুল আচার",
+    "রসুনের আচার",
+    "রাজশাহীর আম",
+    "Organic Food Bangladesh",
+    "Pure Honey Bangladesh",
+    "Khejurer Gur Online",
+    "Mustard Oil BD",
+  ],
+  
+  contact: {
+    hotline: "09613-823813",
+    phone: "01305762659",
+    whatsapp: "01305762659",
+    imo: "01305762659",
+    email: "sadhervubon@gmail.com",
+    address: "82, Maria, Khorkhori-6204, Paba, Rajshahi",
+    addressBangla: "৮২, মারিয়া, খড়খড়ি-৬২০৪, পবা, রাজশাহী",
+  },
+
+  social: {
+    facebook: "https://www.facebook.com/sadervubon",
+    messenger: "https://m.me/sadervubon",
+    youtube: "https://www.youtube.com/@sadervubon5975",
+    whatsappUrl: "https://wa.me/8801305762659",
+  },
+
+  features: [
+    {
+      title: "ফ্রি ডেলিভারি",
+      englishTitle: "Free Delivery",
+      description: "৳২৫০০-এর বেশি যেকোনো অর্ডারে",
+    },
+    {
+      title: "৭ দিনের রিটার্ন সুবিধা",
+      englishTitle: "7 Days Return",
+      description: "পণ্যে কোনো সমস্যা থাকলে",
+    },
+    {
+      title: "নিরাপদ পেমেন্ট",
+      englishTitle: "Secure Payment",
+      description: "ক্যাশ অন ডেলিভারি ও ১০০% সুরক্ষিত",
+    },
+    {
+      title: "২৪/৭ ডেডিকেটেড সাপোর্ট",
+      englishTitle: "24/7 Support",
+      description: "হটলাইন: 09613-823813",
+    },
+  ],
+
+  categories: [
+    { name: "খেজুরের গুড়", slug: "khejurer-gur", bangla: "খেজুরের গুড়" },
+    { name: "আখের গুড়", slug: "akher-gur", bangla: "আখের গুড়" },
+    { name: "তালের গুড়", slug: "taler-gur", bangla: "তালের গুড়" },
+    { name: "খাঁটি মধু", slug: "honey", bangla: "খাঁটি মধু" },
+    { name: "ঘানির খাঁটি তেল", slug: "oil", bangla: "ঘানির খাঁটি তেল" },
+    { name: "স্পেশাল আচার", slug: "pickle", bangla: "স্পেশাল আচার" },
+    { name: "কম্বো অফার", slug: "combo-package", bangla: "কম্বো অফার" },
+    { name: "আম", slug: "mango", bangla: "রাজশাহীর মিষ্টি আম" },
+  ],
+};
