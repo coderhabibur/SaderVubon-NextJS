@@ -53,8 +53,32 @@ export default function CartPage() {
 
   if (!isClient) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green" />
+      <div className="bg-gray-50 flex-1 py-10 animate-pulse">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="h-8 w-44 bg-gray-200 rounded-xl mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl p-4 border border-gray-200 flex items-center gap-4">
+                  <div className="w-16 h-16 bg-gray-100 rounded-xl shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-48 bg-gray-200 rounded" />
+                    <div className="h-4 w-24 bg-gray-100 rounded" />
+                  </div>
+                  <div className="h-6 w-16 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
+            <div className="lg:col-span-4">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 space-y-4">
+                <div className="h-6 w-32 bg-gray-200 rounded" />
+                <div className="h-4 w-full bg-gray-100 rounded" />
+                <div className="h-4 w-full bg-gray-100 rounded" />
+                <div className="h-10 w-full bg-emerald-100 rounded-xl" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -86,7 +110,7 @@ export default function CartPage() {
 
   return (
     <div className="bg-gray-50 flex-1 py-6 sm:py-10">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 lg:px-8">
         {/* 1. Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-brand-green transition">
@@ -394,10 +418,12 @@ export default function CartPage() {
               {/* Checkout CTA Button */}
               <Link
                 href="/checkout"
-                className="w-full mt-6 py-4 px-6 rounded-xl font-black text-base sm:text-lg flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white shadow-lg shadow-emerald-900/10 transition-all active:scale-[0.98] cursor-pointer"
+                className="group/btn relative overflow-hidden w-full mt-6 py-4 px-6 rounded-2xl font-black text-base sm:text-lg flex items-center justify-center gap-2 bg-gradient-to-r from-[#063b23] via-[#0d6437] to-[#063b23] hover:from-[#09472b] hover:via-[#117641] hover:to-[#09472b] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_6px_20px_rgba(6,59,35,0.28)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_10px_28px_rgba(6,59,35,0.38)] border border-emerald-600/35 hover:border-emerald-400/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all cursor-pointer select-none"
               >
-                <span>Proceed to Checkout</span>
-                <ArrowRight className="w-5 h-5" />
+                {/* Shimmer sweep */}
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+                <span className="font-extrabold tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">Proceed to Checkout</span>
+                <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
               </Link>
 
               {/* Coupon / Discount Code Input */}

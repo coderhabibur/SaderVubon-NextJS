@@ -5,7 +5,7 @@ import { SectionTitle } from "@/components/SectionTitle";
 import { CustomerReviews } from "@/components/CustomerReviews";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { getLiveProducts } from "@/lib/woocommerce";
-import { Rocket, RefreshCw, CreditCard, Headphones, ArrowRight } from "lucide-react";
+import { Rocket, RefreshCw, CreditCard, Headphones, ArrowRight, Sparkles, Flame, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export default async function Home() {
@@ -39,251 +39,239 @@ export default async function Home() {
   const richCategories: CategoryItem[] = [
     {
       name: "খাঁটি মধু",
-      englishName: "Honey",
+      englishName: "Raw Honey",
       itemCount: "১৬টি পণ্য",
-      image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=700&auto=format&fit=crop&q=80",
-      link: "#honey",
+      image: "https://sadervubon.com/wp-content/uploads/2023/10/k-honey.jpg",
+      link: "/category/honey",
     },
     {
       name: "খেজুরের গুড়",
       englishName: "Date Palm Gur",
       itemCount: "১০টি পণ্য",
-      image: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=700&auto=format&fit=crop&q=80",
-      link: "#gur",
+      image: "https://sadervubon.com/wp-content/uploads/2025/12/combo-package-photo-min-scaled.jpg",
+      link: "/category/gur",
     },
     {
       name: "আখের গুড়",
       englishName: "Sugarcane Gur",
       itemCount: "৪টি পণ্য",
-      image: "https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=700&auto=format&fit=crop&q=80",
-      link: "#gur",
+      image: "https://sadervubon.com/wp-content/uploads/2025/02/IMG_E0957-scaled.jpg",
+      link: "/category/gur",
     },
     {
       name: "তালের গুড়",
       englishName: "Palm Gur",
       itemCount: "৬টি পণ্য",
-      image: "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=700&auto=format&fit=crop&q=80",
-      link: "#gur",
+      image: "https://sadervubon.com/wp-content/uploads/2025/05/6fc90ced-cce5-4276-bbd3-46f4c1d87841.jpeg",
+      link: "/category/gur",
     },
     {
       name: "স্পেশাল আচার",
-      englishName: "Pickle Collection",
+      englishName: "Special Pickles",
       itemCount: "১১টি পণ্য",
       image: "https://sadervubon.com/wp-content/uploads/2026/07/boroi-.webp",
-      link: "#pickle",
+      link: "/category/pickle",
     },
     {
       name: "ঘানির সরিষার তেল",
-      englishName: "Mustard Oil",
+      englishName: "Cold Pressed Oil",
       itemCount: "২টি পণ্য",
-      image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=700&auto=format&fit=crop&q=80",
-      link: "#oil",
+      image: "https://sadervubon.com/wp-content/uploads/2023/10/সরিষার-তেল-৫-লিটার.jpg",
+      link: "/category/oil",
     },
     {
       name: "রাজশাহীর আম",
       englishName: "Rajshahi Mango",
       itemCount: "৮টি পণ্য",
-      image: "https://images.unsplash.com/photo-1553279768-865429fa0078?w=700&auto=format&fit=crop&q=80",
-      link: "#mango",
+      image: "https://sadervubon.com/wp-content/uploads/2024/05/IMG_9094-scaled.jpg",
+      link: "/category/mango",
     },
     {
       name: "ধামাকা অফার ও কম্বো",
-      englishName: "Special Offers",
+      englishName: "Special Combos",
       itemCount: "৩টি পণ্য",
-      image: "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?w=700&auto=format&fit=crop&q=80",
-      link: "#offer",
+      image: "https://sadervubon.com/wp-content/uploads/2025/12/১৭৫০-টাকা-ডেলিভারি-চার্জ-ফ্রি-1-1.png",
+      link: "/category/offer",
     },
   ];
 
   return (
-    <div className="bg-white font-sans">
-      {/* Section 1: Hero Carousel Slider */}
-        <HeroSlider />
+    <div className="bg-white font-sans overflow-hidden">
+      {/* 1. Hero Carousel Slider */}
+      <HeroSlider />
 
-        {/* Section 2: Trust Feature Badges - Large, Clean, Modern Cards */}
-        <section className="border-b border-gray-200/80 py-8 bg-gray-50/60">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-              {/* 1. Free Delivery */}
-              <div className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-5 rounded-2xl bg-white border border-gray-200 hover:border-emerald-300 shadow-xs hover:shadow-md transition-all duration-300 group">
-                <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center shrink-0 border border-emerald-100 group-hover:scale-105 group-hover:bg-brand-green group-hover:text-white transition-all duration-300 shadow-2xs">
-                  <Rocket className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-black text-gray-900 text-[13px] sm:text-base lg:text-lg leading-tight mb-0.5 sm:mb-1 group-hover:text-brand-green transition-colors truncate sm:whitespace-normal">
-                    Free Delivery
-                  </h4>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium leading-snug line-clamp-2">
-                    ২৫০০৳+ অর্ডারে ফ্রি ডেলিভারি
-                  </p>
-                </div>
+      {/* 2. Trust Feature Badges - Floating Glassmorphic Strip */}
+      <section className="relative z-20 mt-2 sm:-mt-8 container mx-auto px-4 lg:px-8">
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 shadow-xl shadow-emerald-950/5 border border-emerald-100/80">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {/* 1. Free Delivery */}
+            <div className="flex items-center gap-3 sm:gap-4 group">
+              <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-tr from-emerald-50 to-emerald-100/70 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200/60 group-hover:scale-105 group-hover:bg-emerald-800 group-hover:text-white transition-all duration-300 shadow-2xs">
+                <Rocket className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
               </div>
-
-              {/* 2. 7 Days Return */}
-              <div className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-5 rounded-2xl bg-white border border-gray-200 hover:border-emerald-300 shadow-xs hover:shadow-md transition-all duration-300 group">
-                <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center shrink-0 border border-emerald-100 group-hover:scale-105 group-hover:bg-brand-green group-hover:text-white transition-all duration-300 shadow-2xs">
-                  <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-black text-gray-900 text-[13px] sm:text-base lg:text-lg leading-tight mb-0.5 sm:mb-1 group-hover:text-brand-green transition-colors truncate sm:whitespace-normal">
-                    7 Days Return
-                  </h4>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium leading-snug line-clamp-2">
-                    পণ্যে কোনো সমস্যা হলে রিটার্ন
-                  </p>
-                </div>
+              <div className="min-w-0">
+                <h4 className="font-extrabold text-gray-900 text-sm sm:text-base leading-tight group-hover:text-emerald-800 transition-colors font-heading truncate">
+                  সারা দেশে ডেলিভারি
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-500 font-medium leading-snug mt-0.5">
+                  ৳২৫০০+ অর্ডারে ডেলিভারি ফ্রি
+                </p>
               </div>
+            </div>
 
-              {/* 3. Secure Payment */}
-              <div className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-5 rounded-2xl bg-white border border-gray-200 hover:border-emerald-300 shadow-xs hover:shadow-md transition-all duration-300 group">
-                <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center shrink-0 border border-emerald-100 group-hover:scale-105 group-hover:bg-brand-green group-hover:text-white transition-all duration-300 shadow-2xs">
-                  <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-black text-gray-900 text-[13px] sm:text-base lg:text-lg leading-tight mb-0.5 sm:mb-1 group-hover:text-brand-green transition-colors truncate sm:whitespace-normal">
-                    Secure Payment
-                  </h4>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium leading-snug line-clamp-2">
-                    ক্যাশ অন ডেলিভারি সুবিধা
-                  </p>
-                </div>
+            {/* 2. 7 Days Return */}
+            <div className="flex items-center gap-3 sm:gap-4 group">
+              <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-tr from-emerald-50 to-emerald-100/70 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200/60 group-hover:scale-105 group-hover:bg-emerald-800 group-hover:text-white transition-all duration-300 shadow-2xs">
+                <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
               </div>
+              <div className="min-w-0">
+                <h4 className="font-extrabold text-gray-900 text-sm sm:text-base leading-tight group-hover:text-emerald-800 transition-colors font-heading truncate">
+                  সহজ রিটার্ন সুবিধা
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-500 font-medium leading-snug mt-0.5">
+                  পছন্দ না হলে সমাধান গ্যারান্টি
+                </p>
+              </div>
+            </div>
 
-              {/* 4. 24/7 Support */}
-              <div className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-5 rounded-2xl bg-white border border-gray-200 hover:border-emerald-300 shadow-xs hover:shadow-md transition-all duration-300 group">
-                <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center shrink-0 border border-emerald-100 group-hover:scale-105 group-hover:bg-brand-green group-hover:text-white transition-all duration-300 shadow-2xs">
-                  <Headphones className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-black text-gray-900 text-[13px] sm:text-base lg:text-lg leading-tight mb-0.5 sm:mb-1 group-hover:text-brand-green transition-colors truncate sm:whitespace-normal">
-                    24/7 Support
-                  </h4>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium leading-snug line-clamp-2">
-                    হটলাইন: 09613-823813
-                  </p>
-                </div>
+            {/* 3. Secure Payment */}
+            <div className="flex items-center gap-3 sm:gap-4 group">
+              <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-tr from-emerald-50 to-emerald-100/70 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200/60 group-hover:scale-105 group-hover:bg-emerald-800 group-hover:text-white transition-all duration-300 shadow-2xs">
+                <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-extrabold text-gray-900 text-sm sm:text-base leading-tight group-hover:text-emerald-800 transition-colors font-heading truncate">
+                  ক্যাশ অন ডেলিভারি
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-500 font-medium leading-snug mt-0.5">
+                  পণ্য হাতে পেয়ে টাকা পরিশোধ
+                </p>
+              </div>
+            </div>
+
+            {/* 4. 24/7 Support */}
+            <div className="flex items-center gap-3 sm:gap-4 group">
+              <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-tr from-emerald-50 to-emerald-100/70 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200/60 group-hover:scale-105 group-hover:bg-emerald-800 group-hover:text-white transition-all duration-300 shadow-2xs">
+                <Headphones className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-extrabold text-gray-900 text-sm sm:text-base leading-tight group-hover:text-emerald-800 transition-colors font-heading truncate">
+                  ডেডিকেটেড সাপোর্ট
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-500 font-medium leading-snug mt-0.5">
+                  হটলাইন: 09613-823813
+                </p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Section 3: Categories Carousel Slider */}
-        <section id="categories" className="container mx-auto px-4 py-14">
-          <SectionTitle
-            badge="পণ্য ক্যাটাগরি"
-            title="জনপ্রিয় ক্যাটাগরি সমূহ"
-            subtitle="আপনার পছন্দের পুষ্টিকর ও নির্ভেজাল খাবার বেছে নিন সহজে"
-          />
-          <CategorySlider categories={richCategories} />
-        </section>
+      {/* 3. Popular Categories Carousel */}
+      <section id="categories" className="container mx-auto px-4 lg:px-8 py-16 relative">
+        <SectionTitle
+          badge="পণ্য সম্ভার"
+          title="জনপ্রিয় ক্যাটাগরি সমূহ"
+          subtitle="আপনার পরিবারের জন্য বিশুদ্ধ ও স্বাস্থ্যকর খাবার বেছে নিন সহজে"
+        />
+        <CategorySlider categories={richCategories} />
+      </section>
 
-        {/* Section 4: Flash Deals / Combo Packages */}
-        <section id="combos" className="bg-amber-50/40 py-14 border-t border-b border-amber-100/80">
-          <div className="container mx-auto px-4">
-            <SectionTitle
-              badge="ধামাকা ছাড়"
-              title="স্পেশাল ডিল ও কম্বো প্যাকেজ"
-              subtitle="সাশ্রয়ী মূল্যে পরিবারের সবার জন্য সেরা কম্বো অফার"
-            />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-              {displayCombos.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+      {/* 4. Flash Deals / Special Combo Packages with Luxury Gradient Accent */}
+      <section id="combos" className="py-20 relative overflow-hidden bg-gradient-to-b from-[#fbf8f0] via-[#f7f2e4] to-[#fbf8f0] border-y border-amber-200/60">
+        {/* Decorative Floating Shapes */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl pointer-events-none animate-blob" />
+        <div className="absolute bottom-10 right-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none animate-blob animation-delay-2000" />
+
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-900 text-xs sm:text-sm font-black mb-3 shadow-xs">
+              <Flame className="w-4 h-4 text-amber-600 animate-bounce" />
+              <span>ধামাকা অফার ও সাশ্রয়</span>
             </div>
-            {/* View All Deals - Brand Green Button */}
-            <div className="text-center">
-              <Link
-                href="#products"
-                className="inline-flex items-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white px-8 py-3 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition active:scale-95"
-              >
-                <span>View All Offers</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight font-heading mb-2.5">
+              স্পেশাল ডিল ও কম্বো প্যাকেজ
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600 font-medium">
+              সবচেয়ে জনপ্রিয় পণ্যগুলো এক সাথে কিনুন অবিশ্বাস্য সাশ্রয়ী মূল্যে
+            </p>
           </div>
-        </section>
 
-        {/* Section 5: Traditional Pickles */}
-        {pickleProducts.length > 0 && (
-          <section id="pickle" className="container mx-auto px-4 py-14">
-            <SectionTitle
-              badge="ঘরোয়া রেসিপি"
-              title="ঐতিহ্যবাহী স্পেশাল আচার"
-              subtitle="কোনো প্রকার কৃত্রিম রং ও রাসায়নিক ছাড়া শতভাগ স্বাস্থ্যসম্মত আচার"
-            />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-              {pickleProducts.slice(0, 8).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-            {/* View More Pickles - Brand Green Button */}
-            <div className="text-center">
-              <Link
-                href="#products"
-                className="inline-flex items-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white px-8 py-3 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition active:scale-95"
-              >
-                <span>View More Pickles</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </section>
-        )}
-
-        {/* Section 6: Gur, Honey & Oil */}
-        {gurAndHoneyProducts.length > 0 && (
-          <section id="gur" className="container mx-auto px-4 py-14 border-t border-gray-100">
-            <SectionTitle
-              badge="প্রাকৃতিক মিষ্টি ও পুষ্টি"
-              title="খাঁটি গুড়, মধু ও ঘানির তেল"
-              subtitle="সুন্দরবনের চাকভাঙা মধু, খেজুরের খাঁটি গুড় ও কাঠের ঘানির সরিষার তেল"
-            />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-              {gurAndHoneyProducts.slice(0, 8).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-            {/* View More Products - Brand Green Button */}
-            <div className="text-center">
-              <Link
-                href="#products"
-                className="inline-flex items-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white px-8 py-3 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition active:scale-95"
-              >
-                <span>View More Products</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </section>
-        )}
-
-        {/* Section 7: Why Choose Us */}
-        <WhyChooseUs />
-
-        {/* Section 8: All Products */}
-        <section id="products" className="container mx-auto px-4 py-14">
-          <SectionTitle
-            badge="আমাদের সম্পূর্ণ সম্ভার"
-            title="সকল প্রিমিয়াম পণ্য"
-            subtitle="নিরাপদ খাদ্য ও সুস্বাস্থ্যের জন্য বেছে নিন আপনার প্রয়োজনীয় উপাদান"
-          />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-            {allProducts.slice(0, 12).map((product) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+            {displayCombos.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-          {/* View All Products - Brand Green Button */}
+
           <div className="text-center">
             <Link
-              href="#products"
-              className="inline-flex items-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white px-9 py-3.5 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition active:scale-95"
+              href="/category/offer"
+              className="inline-flex items-center gap-2.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-700 hover:to-amber-600 text-white px-8 py-3.5 rounded-2xl font-extrabold text-sm sm:text-base shadow-lg shadow-amber-900/20 hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
             >
-              <span>View All Products</span>
+              <span>সকল কম্বো অফার দেখুন</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Traditional Pickles Collection */}
+      {pickleProducts.length > 0 && (
+        <section id="pickle" className="container mx-auto px-4 lg:px-8 py-20 relative">
+          <SectionTitle
+            badge="ঘরোয়া খাঁটি রেসিপি"
+            title="ঐতিহ্যবাহী মুখরোচক আচার"
+            subtitle="কোনো প্রকার কৃত্রিম রঙ ও রাসায়নিক ছাড়া শতভাগ স্বাস্থ্যসম্মত ঘরোয়া আচার"
+          />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+            {pickleProducts.slice(0, 8).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <div className="text-center">
+            <Link
+              href="/category/pickle"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-800 to-emerald-700 hover:from-emerald-700 hover:to-emerald-600 text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95"
+            >
+              <span>সব আচার দেখুন</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </section>
+      )}
 
-        {/* Section 9: Customer Reviews */}
-        <CustomerReviews />
+      {/* 6. Gur, Honey & Oil Collection */}
+      {gurAndHoneyProducts.length > 0 && (
+        <section id="gur" className="bg-[#faf9f5] py-20 border-t border-gray-200/70 relative">
+          <div className="container mx-auto px-4 lg:px-8">
+            <SectionTitle
+              badge="প্রাকৃতিক মিষ্টি ও পুষ্টি"
+              title="খাঁটি গুড়, চাকভাঙা মধু ও ঘানির তেল"
+              subtitle="সুন্দরবনের গভীর অরণ্যের মধু, রাজশাহীর ঐতিহ্যবাহী খেজুরের গুড় ও কাঠের ঘানির সরিষার তেল"
+            />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+              {gurAndHoneyProducts.slice(0, 8).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            <div className="text-center">
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-800 to-emerald-700 hover:from-emerald-700 hover:to-emerald-600 text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95"
+              >
+                <span>আরও পণ্য এক্সপ্লোর করুন</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 7. Why Choose Us Section */}
+      <WhyChooseUs />
+
+      {/* 8. Customer Reviews & Social Proof */}
+      <CustomerReviews />
     </div>
   );
 }

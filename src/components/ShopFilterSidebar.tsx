@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Check, X, RotateCcw, Filter, Sparkles, Truck, ShieldCheck, Phone } from "lucide-react";
+import { Check, X, RotateCcw, Filter, Sparkles, Truck, ShieldCheck, Phone, Scale, Palette, Sliders } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { AttributeFilterGroup } from "@/lib/woocommerce";
 
 interface Category {
   id: number;
@@ -13,11 +15,20 @@ interface Category {
 
 interface ShopFilterSidebarProps {
   categories: Category[];
+  attributes?: AttributeFilterGroup[];
   currentCategory?: string;
   currentSort?: string;
   minPrice?: string;
   maxPrice?: string;
-  onFilterChange?: (category?: string, minPrice?: string, maxPrice?: string) => void;
+  currentAttribute?: string;
+  currentAttributeTerm?: string;
+  onFilterChange?: (
+    category?: string,
+    minPrice?: string,
+    maxPrice?: string,
+    attribute?: string,
+    attributeTerm?: string
+  ) => void;
   onCloseMobile?: () => void;
 }
 
@@ -31,56 +42,165 @@ const CATEGORY_MAP: Record<string, string> = {
   offer: "স্পেশাল অফার",
 };
 
-const PRICE_PRESETS = [
-  { label: "সকল মূল্য", min: "", max: "" },
-  { label: "৳৫০০ এর নিচে", min: "0", max: "500" },
-  { label: "৳৫০০ — ৳১,০০০", min: "500", max: "1000" },
-  { label: "৳১,০০০ — ৳২,০০০", min: "1000", max: "2000" },
-  { label: "৳২,০০০ এর বেশি", min: "2000", max: "10000" },
-];
+// Helper to convert Bengali numbers & weights into grams for perfect numeric sorting
+function parseWeightToGrams(str: string): number {
+  const bnToEnMap: Record<string, string> = {
+    "০": "0", "১": "1", "২": "2", "৩": "3", "৪": "4",
+    "৫": "5", "৬": "6", "৭": "7", "৮": "8", "৯": "9",
+  };
+  const normalized = str.replace(/[০-৯]/g, (char) => bnToEnMap[char] || char);
+  const numMatch = normalized.match(/[\d.]+/);
+  const val = numMatch ? parseFloat(numMatch[0]) : 0;
+
+  if (normalized.includes("গ্রাম") || normalized.toLowerCase().includes("gm")) {
+    return val;
+  }
+  if (normalized.toLowerCase().includes("ml") || normalized.toLowerCase().includes("মিলি")) {
+    return val;
+  }
+  if (normalized.includes("কেজি") || normalized.toLowerCase().includes("kg")) {
+    return val * 1000;
+  }
+  return val;
+}
 
 export function ShopFilterSidebar({
   categories,
+  attributes = [],
   currentCategory = "all",
   currentSort = "newest",
   minPrice = "",
   maxPrice = "",
+  currentAttribute = "",
+  currentAttributeTerm = "",
   onFilterChange,
   onCloseMobile,
 }: ShopFilterSidebarProps) {
-  const isPriceActive = (presetMin: string, presetMax: string) => {
-    if (!presetMin && !presetMax) return !minPrice && !maxPrice;
-    return minPrice === presetMin && maxPrice === presetMax;
-  };
+  // Extract and sort weight terms
+  const weightGroup = attributes.find(
+    (g) => g.name.includes("ওজন") || g.slug.includes("weight")
+  );
 
-  const buildUrl = (newCat?: string, newMin?: string, newMax?: string) => {
-    const params = new URLSearchParams();
-    const cat = newCat !== undefined ? newCat : currentCategory;
-    const s = currentSort;
-    const min = newMin !== undefined ? newMin : minPrice;
-    const max = newMax !== undefined ? newMax : maxPrice;
+  const sortedWeightTerms = weightGroup
+    ? [...weightGroup.terms].sort((a, b) => parseWeightToGrams(a.name) - parseWeightToGrams(b.name))
+    : [];
 
-    if (cat && cat !== "all") params.set("category", cat);
-    if (s && s !== "newest") params.set("sort", s);
-    if (min) params.set("min_price", min);
-    if (max) params.set("max_price", max);
+  const maxWeightIndex = Math.max(0, sortedWeightTerms.length - 1);
 
-    const queryString = params.toString();
-    return `/shop${queryString ? `?${queryString}` : ""}`;
-  };
+  // Local state for Min & Max Weight Sliders
+  const [minWeightIdx, setMinWeightIdx] = useState<number>(0);
+  const [maxWeightIdx, setMaxWeightIdx] = useState<number>(maxWeightIndex);
+  const [weightActive, setWeightActive] = useState<boolean>(false);
+
+  // Initialize from props if present
+  useEffect(() => {
+    if (currentAttributeTerm) {
+      const termIds = currentAttributeTerm.split(",");
+      const firstIdx = sortedWeightTerms.findIndex((t) => termIds.includes(String(t.id)));
+      const lastIdx = sortedWeightTerms.findLastIndex
+        ? sortedWeightTerms.findLastIndex((t) => termIds.includes(String(t.id)))
+        : sortedWeightTerms.reduce((acc, t, idx) => (termIds.includes(String(t.id)) ? idx : acc), -1);
+
+      if (firstIdx >= 0) {
+        setMinWeightIdx(firstIdx);
+        setMaxWeightIdx(lastIdx >= 0 ? lastIdx : firstIdx);
+        setWeightActive(true);
+      }
+    } else {
+      setMinWeightIdx(0);
+      setMaxWeightIdx(maxWeightIndex);
+      setWeightActive(false);
+    }
+  }, [currentAttributeTerm, sortedWeightTerms.length]);
+
+  // Dual Price Slider state (localMinPrice, localMaxPrice)
+  const DEFAULT_MAX_PRICE = 5000;
+  const [localMinPrice, setLocalMinPrice] = useState<number>(Number(minPrice) || 0);
+  const [localMaxPrice, setLocalMaxPrice] = useState<number>(
+    maxPrice ? Number(maxPrice) : DEFAULT_MAX_PRICE
+  );
+
+  useEffect(() => {
+    setLocalMinPrice(Number(minPrice) || 0);
+    setLocalMaxPrice(maxPrice ? Number(maxPrice) : DEFAULT_MAX_PRICE);
+  }, [minPrice, maxPrice]);
 
   const handleCategoryClick = (e: React.MouseEvent, catSlug: string) => {
     if (onFilterChange) {
       e.preventDefault();
-      onFilterChange(catSlug, minPrice, maxPrice);
+      onFilterChange(catSlug, minPrice, maxPrice, currentAttribute, currentAttributeTerm);
       if (onCloseMobile) onCloseMobile();
     }
   };
 
-  const handlePriceClick = (e: React.MouseEvent, min: string, max: string) => {
+  // Helper to apply weight range
+  const triggerWeightRangeFilter = (minI: number, maxI: number) => {
+    if (!weightGroup || !onFilterChange) return;
+
+    // Collect all terms that fall between minI and maxI
+    const inRangeTerms = sortedWeightTerms.slice(minI, maxI + 1);
+    if (inRangeTerms.length > 0) {
+      const termIds = inRangeTerms.map((t) => t.id).join(",");
+      onFilterChange(currentCategory, minPrice, maxPrice, weightGroup.slug, termIds);
+    }
+  };
+
+  const handleMinWeightChange = (newMin: number) => {
+    const safeMin = Math.min(newMin, maxWeightIdx);
+    setMinWeightIdx(safeMin);
+    setWeightActive(true);
+    triggerWeightRangeFilter(safeMin, maxWeightIdx);
+  };
+
+  const handleMaxWeightChange = (newMax: number) => {
+    const safeMax = Math.max(newMax, minWeightIdx);
+    setMaxWeightIdx(safeMax);
+    setWeightActive(true);
+    triggerWeightRangeFilter(minWeightIdx, safeMax);
+  };
+
+  const handleResetWeight = () => {
+    setWeightActive(false);
+    setMinWeightIdx(0);
+    setMaxWeightIdx(maxWeightIndex);
     if (onFilterChange) {
-      e.preventDefault();
-      onFilterChange(currentCategory, min, max);
+      onFilterChange(currentCategory, minPrice, maxPrice, "", "");
+    }
+  };
+
+  // Debounced Auto Apply for Price Slider (Live AJAX)
+  useEffect(() => {
+    // If prices changed from defaults or active values, trigger AJAX with debounce
+    const timer = setTimeout(() => {
+      const minStr = localMinPrice > 0 ? String(localMinPrice) : "";
+      const maxStr = localMaxPrice < DEFAULT_MAX_PRICE ? String(localMaxPrice) : "";
+
+      // Only trigger if actually changed compared to URL props
+      if (minStr !== (minPrice || "") || maxStr !== (maxPrice || "")) {
+        if (onFilterChange) {
+          onFilterChange(currentCategory, minStr, maxStr, currentAttribute, currentAttributeTerm);
+        }
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [localMinPrice, localMaxPrice]);
+
+  const handleMinPriceChange = (newMin: number) => {
+    const val = Math.min(newMin, localMaxPrice - 50);
+    setLocalMinPrice(Math.max(0, val));
+  };
+
+  const handleMaxPriceChange = (newMax: number) => {
+    const val = Math.max(newMax, localMinPrice + 50);
+    setLocalMaxPrice(Math.min(DEFAULT_MAX_PRICE, val));
+  };
+
+  const handleResetPrice = () => {
+    setLocalMinPrice(0);
+    setLocalMaxPrice(DEFAULT_MAX_PRICE);
+    if (onFilterChange) {
+      onFilterChange(currentCategory, "", "", currentAttribute, currentAttributeTerm);
       if (onCloseMobile) onCloseMobile();
     }
   };
@@ -88,7 +208,12 @@ export function ShopFilterSidebar({
   const handleResetClick = (e: React.MouseEvent) => {
     if (onFilterChange) {
       e.preventDefault();
-      onFilterChange("all", "", "");
+      setWeightActive(false);
+      setMinWeightIdx(0);
+      setMaxWeightIdx(maxWeightIndex);
+      setLocalMinPrice(0);
+      setLocalMaxPrice(DEFAULT_MAX_PRICE);
+      onFilterChange("all", "", "", "", "");
       if (onCloseMobile) onCloseMobile();
     }
   };
@@ -103,15 +228,35 @@ export function ShopFilterSidebar({
     return true;
   });
 
-  const hasActiveFilters = (currentCategory && currentCategory !== "all") || minPrice || maxPrice;
+  const hasActiveFilters =
+    (currentCategory && currentCategory !== "all") ||
+    minPrice ||
+    maxPrice ||
+    currentAttributeTerm;
+
+  // Active Weight label display
+  let activeWeightLabel = "";
+  if (weightActive && sortedWeightTerms.length > 0) {
+    const minName = sortedWeightTerms[minWeightIdx]?.name;
+    const maxName = sortedWeightTerms[maxWeightIdx]?.name;
+    activeWeightLabel = minName === maxName ? minName : `${minName} — ${maxName}`;
+  }
+
+  // Weight Percentage calculation for progress bar
+  const weightMinPercent = maxWeightIndex > 0 ? (minWeightIdx / maxWeightIndex) * 100 : 0;
+  const weightMaxPercent = maxWeightIndex > 0 ? (maxWeightIdx / maxWeightIndex) * 100 : 100;
+
+  // Price Percentage calculation for progress bar
+  const priceMinPercent = (localMinPrice / DEFAULT_MAX_PRICE) * 100;
+  const priceMaxPercent = (localMaxPrice / DEFAULT_MAX_PRICE) * 100;
 
   return (
     <div className="space-y-6">
       {/* Mobile Header with Close button */}
       {onCloseMobile && (
         <div className="flex items-center justify-between pb-4 border-b border-gray-200 lg:hidden">
-          <div className="flex items-center gap-2 text-gray-900 font-black text-lg">
-            <Filter className="w-5 h-5 text-brand-green" />
+          <div className="flex items-center gap-2 text-gray-900 font-black text-lg font-heading">
+            <Filter className="w-5 h-5 text-emerald-800" />
             <span>ফিল্টার নির্বাচন করুন</span>
           </div>
           <button
@@ -126,13 +271,13 @@ export function ShopFilterSidebar({
 
       {/* Active Filters Reset Bar */}
       {hasActiveFilters && (
-        <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4">
+        <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-4 shadow-2xs">
           <div className="flex items-center justify-between mb-2.5">
-            <span className="text-xs font-black text-brand-dark">সক্রিয় ফিল্টারসমূহ</span>
+            <span className="text-xs font-black text-emerald-950 font-heading">সক্রিয় ফিল্টারসমূহ</span>
             <Link
               href="/shop"
               onClick={handleResetClick}
-              className="text-[11px] font-bold text-red-600 hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-[11px] font-bold text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
               <span>রিসেট করুন</span>
@@ -143,9 +288,9 @@ export function ShopFilterSidebar({
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-emerald-200 text-xs font-bold text-gray-800 shadow-2xs">
                 <span>{CATEGORY_MAP[currentCategory] || currentCategory}</span>
                 <Link
-                  href={buildUrl("all")}
+                  href="/shop"
                   onClick={(e) => handleCategoryClick(e, "all")}
-                  className="text-gray-400 hover:text-red-500 cursor-pointer"
+                  className="text-gray-400 hover:text-rose-500 cursor-pointer"
                 >
                   <X className="w-3 h-3" />
                 </Link>
@@ -153,11 +298,29 @@ export function ShopFilterSidebar({
             )}
             {(minPrice || maxPrice) && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-emerald-200 text-xs font-bold text-gray-800 shadow-2xs">
-                <span>দাম: ৳{minPrice || 0} - ৳{maxPrice || "অসীম"}</span>
+                <span>দাম: ৳{minPrice || 0} - ৳{maxPrice || DEFAULT_MAX_PRICE}</span>
                 <Link
-                  href={buildUrl(undefined, "", "")}
-                  onClick={(e) => handlePriceClick(e, "", "")}
-                  className="text-gray-400 hover:text-red-500 cursor-pointer"
+                  href="/shop"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleResetPrice();
+                  }}
+                  className="text-gray-400 hover:text-rose-500 cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                </Link>
+              </span>
+            )}
+            {activeWeightLabel && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-emerald-200 text-xs font-bold text-gray-800 shadow-2xs">
+                <span>ওজন: {activeWeightLabel}</span>
+                <Link
+                  href="/shop"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleResetWeight();
+                  }}
+                  className="text-gray-400 hover:text-rose-500 cursor-pointer"
                 >
                   <X className="w-3 h-3" />
                 </Link>
@@ -167,30 +330,29 @@ export function ShopFilterSidebar({
         </div>
       )}
 
-      {/* Widget 1: Categories Filter */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs">
-        <h3 className="text-sm font-black text-gray-950 pb-3 mb-3 border-b border-gray-100 flex items-center justify-between">
+      {/* Widget 1: Categories */}
+      <div className="bg-white rounded-3xl border border-gray-200/80 p-5 shadow-xs">
+        <h3 className="text-sm font-black text-gray-950 pb-3 mb-3 border-b border-gray-100 flex items-center justify-between font-heading">
           <span>পণ্যের ক্যাটাগরি</span>
-          <span className="text-xs font-semibold text-gray-400">{displayCategories.length} টি</span>
+          <span className="text-xs text-gray-400 font-bold">{displayCategories.length} টি</span>
         </h3>
 
         <ul className="space-y-1">
-          {/* All Products Option */}
           <li>
             <Link
-              href={buildUrl("all")}
+              href="/shop"
               onClick={(e) => handleCategoryClick(e, "all")}
               className={`flex items-center justify-between py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
                 currentCategory === "all"
-                  ? "bg-brand-green text-white shadow-2xs"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-emerald-800 text-white shadow-2xs"
+                  : "text-gray-700 hover:bg-gray-50"
               }`}
             >
               <div className="flex items-center gap-2">
                 <div
                   className={`w-4 h-4 rounded-md border flex items-center justify-center ${
                     currentCategory === "all"
-                      ? "border-white bg-white text-brand-green"
+                      ? "border-white bg-white text-emerald-800"
                       : "border-gray-300 bg-white"
                   }`}
                 >
@@ -201,25 +363,24 @@ export function ShopFilterSidebar({
             </Link>
           </li>
 
-          {/* Real WooCommerce Clean Categories */}
           {displayCategories.map((cat) => {
             const isActive = currentCategory.toLowerCase() === cat.slug.toLowerCase();
             return (
               <li key={cat.id}>
                 <Link
-                  href={buildUrl(cat.slug)}
+                  href={`/shop?category=${cat.slug}`}
                   onClick={(e) => handleCategoryClick(e, cat.slug)}
                   className={`flex items-center justify-between py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
                     isActive
-                      ? "bg-brand-green text-white shadow-2xs"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-emerald-800 text-white shadow-2xs"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   <div className="flex items-center gap-2 truncate">
                     <div
                       className={`w-4 h-4 rounded-md border shrink-0 flex items-center justify-center ${
                         isActive
-                          ? "border-white bg-white text-brand-green"
+                          ? "border-white bg-white text-emerald-800"
                           : "border-gray-300 bg-white"
                       }`}
                     >
@@ -241,71 +402,197 @@ export function ShopFilterSidebar({
         </ul>
       </div>
 
-      {/* Widget 2: Price Filter */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs">
-        <h3 className="text-sm font-black text-gray-950 pb-3 mb-3 border-b border-gray-100">
-          মূল্যের সীমা (Price Range)
-        </h3>
+      {/* Widget 2: Dual Weight Range Slider (নূন্যতম ও সর্বোচ্চ ওজন স্লাইডার) */}
+      {sortedWeightTerms.length > 0 && weightGroup && (
+        <div className="bg-white rounded-3xl border border-gray-200/80 p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+            <h3 className="text-sm font-black text-gray-950 flex items-center gap-2 font-heading">
+              <Scale className="w-4 h-4 text-emerald-700" />
+              <span>ওজন নির্বাচন (Weight Range)</span>
+            </h3>
+            {weightActive && (
+              <button
+                type="button"
+                onClick={handleResetWeight}
+                className="text-[11px] font-bold text-rose-600 hover:underline cursor-pointer"
+              >
+                রিসেট
+              </button>
+            )}
+          </div>
 
-        <ul className="space-y-1">
-          {PRICE_PRESETS.map((preset, idx) => {
-            const active = isPriceActive(preset.min, preset.max);
-            return (
-              <li key={idx}>
-                <Link
-                  href={buildUrl(undefined, preset.min, preset.max)}
-                  onClick={(e) => handlePriceClick(e, preset.min, preset.max)}
-                  className={`flex items-center justify-between py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
-                    active
-                      ? "bg-emerald-50 text-brand-green border border-emerald-200"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        active
-                          ? "border-brand-green bg-brand-green text-white"
-                          : "border-gray-300 bg-white"
-                      }`}
-                    >
-                      {active && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                    </div>
-                    <span>{preset.label}</span>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+          {/* Min & Max Display Boxes */}
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <div className="flex-1 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-2.5 text-center">
+              <span className="text-[10px] text-gray-500 block">নূন্যতম ওজন</span>
+              <span className="font-black text-emerald-950 text-sm font-heading">
+                {sortedWeightTerms[minWeightIdx]?.name || "প্রথম"}
+              </span>
+            </div>
+            <span className="text-gray-400 font-bold">—</span>
+            <div className="flex-1 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-2.5 text-center">
+              <span className="text-[10px] text-gray-500 block">সর্বোচ্চ ওজন</span>
+              <span className="font-black text-emerald-950 text-sm font-heading">
+                {sortedWeightTerms[maxWeightIdx]?.name || "শেষ"}
+              </span>
+            </div>
+          </div>
+
+          {/* Dual Range Sliders with Colored Active Track */}
+          <div className="relative h-6 flex items-center px-1 my-2">
+            {/* Background Track */}
+            <div className="w-full h-2 bg-gray-200 rounded-full relative overflow-hidden">
+              {/* Active Green Track between Min and Max */}
+              <div
+                className="absolute h-full bg-emerald-800 rounded-full transition-all duration-75"
+                style={{
+                  left: `${weightMinPercent}%`,
+                  width: `${Math.max(0, weightMaxPercent - weightMinPercent)}%`,
+                }}
+              />
+            </div>
+
+            {/* Min Range Slider Thumb (higher z-index when close to 0) */}
+            <input
+              type="range"
+              min="0"
+              max={maxWeightIndex}
+              step="1"
+              value={minWeightIdx}
+              onChange={(e) => handleMinWeightChange(Number(e.target.value))}
+              className="dual-range-slider"
+              style={{ zIndex: minWeightIdx > maxWeightIndex - 2 ? 40 : 25 }}
+              aria-label="Minimum weight slider"
+            />
+
+            {/* Max Range Slider Thumb */}
+            <input
+              type="range"
+              min="0"
+              max={maxWeightIndex}
+              step="1"
+              value={maxWeightIdx}
+              onChange={(e) => handleMaxWeightChange(Number(e.target.value))}
+              className="dual-range-slider"
+              style={{ zIndex: 30 }}
+              aria-label="Maximum weight slider"
+            />
+          </div>
+
+          {/* Min & Max Labels */}
+          <div className="flex justify-between items-center text-[11px] font-bold text-gray-400 pt-1">
+            <span>{sortedWeightTerms[0]?.name}</span>
+            <span className="text-emerald-700">উভয় বাটনে স্লাইড করুন ⇄</span>
+            <span>{sortedWeightTerms[maxWeightIndex]?.name}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Widget 3: Dual Price Range Slider (নূন্যতম ও সর্বোচ্চ মূল্য স্লাইডার) */}
+      <div className="bg-white rounded-3xl border border-gray-200/80 p-5 shadow-xs space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+          <h3 className="text-sm font-black text-gray-950 flex items-center gap-2 font-heading">
+            <Sliders className="w-4 h-4 text-emerald-700" />
+            <span>মূল্যের সীমা (Price Slider)</span>
+          </h3>
+          {(minPrice || maxPrice) && (
+            <button
+              type="button"
+              onClick={handleResetPrice}
+              className="text-[11px] font-bold text-rose-600 hover:underline cursor-pointer"
+            >
+              রিসেট
+            </button>
+          )}
+        </div>
+
+        {/* Dynamic Display of Range Values */}
+        <div className="flex items-center justify-between gap-3 text-xs">
+          <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-2.5 text-center">
+            <span className="text-[10px] text-gray-400 block">নূন্যতম মূল্য</span>
+            <span className="font-black text-gray-900 text-sm">৳{localMinPrice}</span>
+          </div>
+          <span className="text-gray-400 font-bold">—</span>
+          <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-2.5 text-center">
+            <span className="text-[10px] text-gray-400 block">সর্বোচ্চ মূল্য</span>
+            <span className="font-black text-gray-900 text-sm">৳{localMaxPrice}</span>
+          </div>
+        </div>
+
+        {/* Dual Price Sliders with Colored Active Track */}
+        <div className="relative h-6 flex items-center px-1 my-2">
+          {/* Background Track */}
+          <div className="w-full h-2 bg-gray-200 rounded-full relative overflow-hidden">
+            {/* Active Green Track between Min and Max Price */}
+            <div
+              className="absolute h-full bg-emerald-800 rounded-full transition-all duration-75"
+              style={{
+                left: `${priceMinPercent}%`,
+                width: `${Math.max(0, priceMaxPercent - priceMinPercent)}%`,
+              }}
+            />
+          </div>
+
+          {/* Min Price Slider Thumb */}
+          <input
+            type="range"
+            min="0"
+            max={DEFAULT_MAX_PRICE}
+            step="50"
+            value={localMinPrice}
+            onChange={(e) => handleMinPriceChange(Number(e.target.value))}
+            className="dual-range-slider"
+            style={{ zIndex: localMinPrice > DEFAULT_MAX_PRICE - 200 ? 40 : 25 }}
+            aria-label="Minimum price slider"
+          />
+
+          {/* Max Price Slider Thumb */}
+          <input
+            type="range"
+            min="0"
+            max={DEFAULT_MAX_PRICE}
+            step="50"
+            value={localMaxPrice}
+            onChange={(e) => handleMaxPriceChange(Number(e.target.value))}
+            className="dual-range-slider"
+            style={{ zIndex: 30 }}
+            aria-label="Maximum price slider"
+          />
+        </div>
+
+        <div className="flex justify-between items-center text-[11px] font-bold text-gray-400 pt-1">
+          <span>৳০</span>
+          <span className="text-emerald-700">উভয় বাটনে স্লাইড করুন ⇄</span>
+          <span>৳{DEFAULT_MAX_PRICE}+</span>
+        </div>
       </div>
 
-      {/* Widget 3: Trust & Support Sidebar Card */}
-      <div className="bg-gradient-to-br from-[#062b1e] to-[#0a4731] rounded-2xl p-5 text-white shadow-xs space-y-4">
+      {/* Widget 4: Trust & Support Sidebar Card */}
+      <div className="bg-gradient-to-br from-[#042418] via-[#063b27] to-[#042418] rounded-3xl p-5 text-white shadow-xs space-y-4 border border-emerald-800/40">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-brand-yellow" />
-          <h4 className="text-sm font-black text-brand-yellow">কেন স্বাদের ভুবন?</h4>
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <h4 className="text-sm font-black text-amber-300 font-heading">কেন স্বাদের ভুবন?</h4>
         </div>
-        <p className="text-xs text-gray-300 leading-relaxed">
+        <p className="text-xs text-emerald-100/80 leading-relaxed font-sans">
           ১০০% খাঁটি ও নির্ভেজাল খাবার সরাসরি গ্রাম থেকে আপনার টেবিলে।
         </p>
 
-        <div className="space-y-2.5 text-xs text-gray-200 pt-1">
+        <div className="space-y-2.5 text-xs text-emerald-100 pt-1">
           <div className="flex items-center gap-2">
-            <Truck className="w-4 h-4 text-brand-yellow shrink-0" />
+            <Truck className="w-4 h-4 text-amber-400 shrink-0" />
             <span>২৫০০৳+ অর্ডারে ফ্রি ডেলিভারি</span>
           </div>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-brand-yellow shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
             <span>১০০% ক্যাশ অন ডেলিভারি</span>
           </div>
         </div>
 
         <div className="pt-3 border-t border-emerald-800/80">
-          <p className="text-[11px] text-gray-400">অর্ডার সংক্রান্ত সহায়তা:</p>
+          <p className="text-[11px] text-emerald-300/80">অর্ডার সংক্রান্ত সহায়তা:</p>
           <a
             href={`tel:${siteConfig.contact.hotline}`}
-            className="flex items-center gap-1.5 text-brand-yellow font-black text-sm hover:underline mt-0.5"
+            className="flex items-center gap-1.5 text-amber-400 font-black text-sm hover:underline mt-0.5"
           >
             <Phone className="w-3.5 h-3.5" />
             <span>{siteConfig.contact.hotline}</span>

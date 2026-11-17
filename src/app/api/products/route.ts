@@ -9,6 +9,8 @@ export async function GET(req: Request) {
     const max_price = searchParams.get("max_price");
     const sort = searchParams.get("sort") || "newest";
     const search = searchParams.get("search");
+    const attribute = searchParams.get("attribute") || undefined;
+    const attribute_term = searchParams.get("attribute_term") || undefined;
     const page = searchParams.get("page") || "1";
     const per_page = searchParams.get("per_page") || "12";
 
@@ -41,6 +43,8 @@ export async function GET(req: Request) {
       min_price: min_price || undefined,
       max_price: max_price || undefined,
       search: search || undefined,
+      attribute,
+      attribute_term,
       orderby,
       order,
       page: Number(page),

@@ -5,9 +5,23 @@ import { ProductCard } from "@/components/ProductCard";
 import { ProductDetailsView } from "@/components/ProductDetailsView";
 import { SectionTitle } from "@/components/SectionTitle";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
-import { getProductBySlug, getRelatedProducts, getProductVariations } from "@/lib/woocommerce";
+import { getProductBySlug, getRelatedProducts, getProductVariations, getLiveProducts } from "@/lib/woocommerce";
 import { siteConfig } from "@/config/site";
 import { ChevronRight, Home } from "lucide-react";
+
+export const revalidate = 300;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    const products = await getLiveProducts(30);
+    return products.map((p) => ({
+      slug: p.slug,
+    }));
+  } catch {
+    return [];
+  }
+}
 
 interface ProductPageProps {
   params: Promise<{
@@ -165,8 +179,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />
 
       {/* Breadcrumb Navigation */}
-        <div className="bg-gray-50 border-b border-gray-200/80 py-3">
-          <div className="container mx-auto px-4">
+      <div className="bg-gray-50 border-b border-gray-200/80 py-3">
+        <div className="container mx-auto px-4 lg:px-8">
             <nav className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 overflow-x-auto">
               <Link href="/" className="hover:text-brand-green flex items-center gap-1 shrink-0">
                 <Home className="w-3.5 h-3.5" />
@@ -191,7 +205,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
 
         {/* Product Details Section */}
-        <section className="container mx-auto px-4 py-8 sm:py-12">
+      <section className="container mx-auto px-4 lg:px-8 py-3 sm:py-6">
           <ProductDetailsView product={product} variations={variations} />
           <RecentlyViewed
             currentProduct={{
@@ -206,13 +220,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </section>
 
         {/* Related Products Section */}
-        {relatedProducts.length > 0 && (
-          <section className="bg-gray-50/70 border-t border-gray-200 py-14">
-            <div className="container mx-auto px-4">
+      {relatedProducts.length > 0 && (
+        <section className="bg-gray-50/70 border-t border-gray-200 py-8 sm:py-12">
+          <div className="container mx-auto px-4 lg:px-8">
               <SectionTitle
-                badge="Related Products"
-                title="You May Also Like"
-                subtitle="Explore more authentic and pure traditional food products"
+                badge="সংশ্লিষ্ট পণ্য"
+                title="আপনার আরও পছন্দ হতে পারে"
+                subtitle="খাঁটি ও প্রাকৃতিক খাদ্য সামগ্রীর আরও কিছু পণ্য পরখ করে দেখুন"
               />
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 {relatedProducts.map((p) => (

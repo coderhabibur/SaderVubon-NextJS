@@ -3,17 +3,25 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { ShopClientView } from "@/app/shop/ShopClientView";
-import { getFilteredProductsWithPagination, getLiveCategories, LiveProduct } from "@/lib/woocommerce";
+import { getFilteredProductsWithPagination, getLiveCategories, getLiveAttributesWithTerms, LiveProduct } from "@/lib/woocommerce";
+
+export const revalidate = 300;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const supportedSlugs = ["gur", "honey", "oil", "pickle", "mango", "offer", "all-products"];
+  try {
+    const liveCats = await getLiveCategories();
+    const allSlugs = new Set([...supportedSlugs, ...liveCats.map((c) => c.slug)]);
+    return Array.from(allSlugs).map((slug) => ({ slug }));
+  } catch {
+    return supportedSlugs.map((slug) => ({ slug }));
+  }
+}
 
 interface CategoryPageProps {
   params: Promise<{
     slug: string;
-  }>;
-  searchParams: Promise<{
-    sort?: string;
-    min_price?: string;
-    max_price?: string;
-    page?: string;
   }>;
 }
 
@@ -62,16 +70,14 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   };
 }
 
-export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const resolvedSearchParams = await searchParams;
   const decodedSlug = decodeURIComponent(slug);
-  const currentSort = resolvedSearchParams.sort || "newest";
-  const minPrice = resolvedSearchParams.min_price;
-  const maxPrice = resolvedSearchParams.max_price;
-  const page = resolvedSearchParams.page ? Number(resolvedSearchParams.page) : 1;
 
-  const categories = await getLiveCategories();
+  const [categories, attributes] = await Promise.all([
+    getLiveCategories(),
+    getLiveAttributesWithTerms(),
+  ]);
   const currentCat = categories.find(
     (c) => c.slug.toLowerCase() === decodedSlug.toLowerCase()
   );
@@ -79,25 +85,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   // If no category found in WC, still check if it matches our supported slugs
   const categoryId = currentCat?.id;
 
-  // Sorting
-  let orderby: "date" | "price" | "popularity" | "title" = "date";
-  let order: "asc" | "desc" = "desc";
-
-  if (currentSort === "price_asc") {
-    orderby = "price";
-    order = "asc";
-  } else if (currentSort === "price_desc") {
-    orderby = "price";
-    order = "desc";
-  }
-
   const { products, total, totalPages, currentPage } = await getFilteredProductsWithPagination({
     category: categoryId,
-    min_price: minPrice,
-    max_price: maxPrice,
-    orderby,
-    order,
-    page,
+    orderby: "date",
+    order: "desc",
+    page: 1,
     per_page: 12,
   });
 
@@ -108,7 +100,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   return (
     <div className="bg-gray-50 min-h-screen py-6 sm:py-10">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 lg:px-8">
         {/* 1. Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-brand-green transition">
@@ -142,11 +134,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         {/* 3. 2-Column Layout with Filter Sidebar & AJAX Pagination */}
         <ShopClientView
           categories={categories}
+          attributes={attributes}
           products={products}
           currentCategory={decodedSlug}
-          currentSort={currentSort}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
           total={total}
           totalPages={totalPages}
           currentPage={currentPage}

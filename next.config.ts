@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Disable Next.js dev indicator badge in bottom-left
+  devIndicators: false,
   // Compress assets using gzip/brotli
   compress: true,
   // Strict mode for cleaner React execution
@@ -9,6 +11,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Image optimization
   images: {
+    dangerouslyAllowSVG: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
@@ -20,6 +23,20 @@ const nextConfig: NextConfig = {
         hostname: "sadervubon.com",
       },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/order",
+        destination: "/khejur-gur-patali-jhola",
+        permanent: true,
+      },
+      {
+        source: "/landing",
+        destination: "/khejur-gur-patali-jhola",
+        permanent: true,
+      },
+    ];
   },
 };
 

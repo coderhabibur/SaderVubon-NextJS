@@ -68,28 +68,31 @@ export function MobileStickyBuyBar({
           type="button"
           onClick={onAddToCart}
           disabled={btnState !== "idle"}
-          className={`flex items-center justify-center gap-1.5 py-2.5 px-5 rounded-xl font-black text-xs shadow-md transition-all active:scale-95 shrink-0 cursor-pointer ${
+          className={`group/btn relative overflow-hidden flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-3.5 sm:px-5 rounded-xl font-black text-xs sm:text-sm transition-all active:scale-95 shrink-0 cursor-pointer select-none whitespace-nowrap ${
             btnState === "added"
-              ? "bg-brand-green text-white scale-[1.02]"
+              ? "bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 text-white shadow-[0_4px_14px_rgba(5,150,105,0.4)] border border-emerald-400/50 scale-[1.02]"
               : btnState === "adding"
-              ? "bg-amber-400 text-brand-dark opacity-90"
-              : "bg-brand-yellow hover:bg-brand-yellow-hover text-brand-dark"
+              ? "bg-emerald-800 text-white opacity-90 cursor-wait shadow-sm"
+              : "bg-gradient-to-r from-[#063b23] via-[#0d6437] to-[#063b23] hover:from-[#09472b] hover:via-[#117641] hover:to-[#09472b] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_4px_12px_rgba(6,59,35,0.25)] border border-emerald-600/30"
           }`}
         >
+          {/* Shimmer sweep */}
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+
           {btnState === "adding" ? (
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Adding...</span>
+              <span className="whitespace-nowrap">যোগ হচ্ছে...</span>
             </>
           ) : btnState === "added" ? (
             <>
               <Check className="w-3.5 h-3.5 stroke-[3] text-white" />
-              <span>Added!</span>
+              <span className="whitespace-nowrap">যুক্ত হয়েছে!</span>
             </>
           ) : (
             <>
-              <ShoppingCart className="w-3.5 h-3.5" />
-              <span>Add to Cart</span>
+              <ShoppingCart className="w-3.5 h-3.5 text-white" />
+              <span className="whitespace-nowrap font-extrabold">অর্ডার করুন</span>
             </>
           )}
         </button>

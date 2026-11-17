@@ -191,8 +191,18 @@ export default function AccountPage() {
 
   if (authLoading) {
     return (
-      <div className="bg-gray-50 flex-1 flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-green" />
+      <div className="bg-gray-50 flex-1 py-8 sm:py-12 animate-pulse">
+        <div className="container mx-auto px-4 max-w-4xl space-y-6">
+          <div className="h-6 w-32 bg-gray-200 rounded" />
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 space-y-4">
+            <div className="h-8 w-48 bg-gray-200 rounded-xl" />
+            <div className="h-4 w-72 bg-gray-100 rounded" />
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="h-12 bg-gray-100 rounded-xl" />
+              <div className="h-12 bg-gray-100 rounded-xl" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

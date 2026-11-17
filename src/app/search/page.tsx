@@ -49,7 +49,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="bg-gray-50 flex-1 py-6 sm:py-10">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 lg:px-8">
         {/* 1. Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-brand-green transition">

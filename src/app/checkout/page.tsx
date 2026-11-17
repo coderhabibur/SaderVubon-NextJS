@@ -121,8 +121,26 @@ export default function CheckoutPage() {
 
   if (!isClient) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green" />
+      <div className="bg-gray-50 flex-1 py-10 animate-pulse">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="h-8 w-48 bg-gray-200 rounded-xl mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 space-y-4">
+              <div className="h-6 w-36 bg-gray-200 rounded" />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="h-10 bg-gray-100 rounded-xl" />
+                <div className="h-10 bg-gray-100 rounded-xl" />
+              </div>
+              <div className="h-10 bg-gray-100 rounded-xl" />
+              <div className="h-20 bg-gray-100 rounded-xl" />
+            </div>
+            <div className="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 space-y-4">
+              <div className="h-6 w-36 bg-gray-200 rounded" />
+              <div className="h-16 bg-gray-100 rounded-xl" />
+              <div className="h-12 w-full bg-emerald-100 rounded-2xl" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -493,12 +511,16 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full mt-6 py-4 px-6 rounded-xl font-black text-base sm:text-lg flex items-center justify-center gap-2 shadow-lg transition-all active:scale-[0.98] cursor-pointer ${
+                  className={`group/btn relative overflow-hidden w-full mt-6 py-4 px-6 rounded-2xl font-black text-base sm:text-lg flex items-center justify-center gap-2 transition-all cursor-pointer select-none ${
                     loading
                       ? "bg-gray-400 text-white cursor-not-allowed"
-                      : "bg-brand-green hover:bg-brand-green-hover text-white shadow-emerald-900/10"
+                      : "bg-gradient-to-r from-[#063b23] via-[#0d6437] to-[#063b23] hover:from-[#09472b] hover:via-[#117641] hover:to-[#09472b] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_6px_20px_rgba(6,59,35,0.28)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_10px_28px_rgba(6,59,35,0.38)] border border-emerald-600/35 hover:border-emerald-400/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
                   }`}
                 >
+                  {/* Shimmer sweep */}
+                  {!loading && (
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+                  )}
                   {loading ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
@@ -506,8 +528,10 @@ export default function CheckoutPage() {
                     </>
                   ) : (
                     <>
-                      <span>Confirm Order (৳{grandTotal})</span>
-                      <ArrowRight className="w-5 h-5" />
+                      <span className="font-extrabold tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
+                        Confirm Order (৳{grandTotal})
+                      </span>
+                      <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                     </>
                   )}
                 </button>

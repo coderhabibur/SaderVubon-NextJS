@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 
 export function CustomerReviews() {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -84,96 +84,101 @@ export function CustomerReviews() {
   };
 
   return (
-    <section className="bg-gradient-to-b from-amber-50/40 via-white to-emerald-50/30 py-14 border-t border-b border-gray-100 relative">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center max-w-xl mx-auto mb-10">
-          <span className="text-xs font-bold text-brand-green uppercase tracking-wider block mb-1">
-            গ্রাহক সন্তুষ্টি
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mb-2">
-            আমাদের গ্রাহকরা কী বলছেন?
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-600">
-            দেশজুড়ে হাজারো সন্তুষ্ট পরিবার প্রতিনিয়ত বেছে নিচ্ছে স্বাদের ভুবনের খাঁটি পণ্য
-          </p>
+    <section className="py-20 bg-gradient-to-b from-[#f9f8f4] to-white relative overflow-hidden">
+      {/* Decorative Blur Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-72 bg-amber-400/5 blur-3xl pointer-events-none rounded-full" />
+
+      <div className="container mx-auto px-4 lg:px-8 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 shadow-xs mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-xs sm:text-sm font-extrabold text-emerald-800 tracking-wider uppercase">
+                গ্রাহক মূল্যায়ন
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight font-heading">
+              আমাদের সম্মানিত গ্রাহকদের মতামত
+            </h2>
+          </div>
+
+          {/* Slider Arrow Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => scroll("left")}
+              disabled={!canScrollLeft}
+              aria-label="পূর্ববর্তী রিভিউ"
+              className={`w-11 h-11 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center transition-all duration-300 ${
+                canScrollLeft
+                  ? "hover:bg-emerald-800 hover:text-white cursor-pointer active:scale-90"
+                  : "opacity-40 cursor-default"
+              }`}
+            >
+              <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              disabled={!canScrollRight}
+              aria-label="পরবর্তী রিভিউ"
+              className={`w-11 h-11 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center transition-all duration-300 ${
+                canScrollRight
+                  ? "hover:bg-emerald-800 hover:text-white cursor-pointer active:scale-90"
+                  : "opacity-40 cursor-default"
+              }`}
+            >
+              <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+            </button>
+          </div>
         </div>
 
-        {/* Carousel Slider with Navigation Arrows */}
-        <div className="relative group/reviews">
-          {/* Left Arrow */}
-          <button
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
-            aria-label="Previous Reviews"
-            className={`absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-gray-800 shadow-xl border border-gray-100 flex items-center justify-center transition-all duration-300 ${
-              canScrollLeft
-                ? "hover:bg-brand-yellow hover:text-brand-dark opacity-90 hover:opacity-100 hover:scale-105 cursor-pointer"
-                : "opacity-0 pointer-events-none cursor-default"
-            }`}
-          >
-            <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
-          </button>
-
-          {/* Right Arrow */}
-          <button
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-            aria-label="Next Reviews"
-            className={`absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-gray-800 shadow-xl border border-gray-100 flex items-center justify-center transition-all duration-300 ${
-              canScrollRight
-                ? "hover:bg-brand-yellow hover:text-brand-dark opacity-90 hover:opacity-100 hover:scale-105 cursor-pointer"
-                : "opacity-0 pointer-events-none cursor-default"
-            }`}
-          >
-            <ChevronRight className="w-6 h-6 stroke-[2.5]" />
-          </button>
-
-          {/* Horizontal Scrollable Carousel Container */}
-          <div
-            ref={sliderRef}
-            onScroll={checkScroll}
-            className="flex gap-5 overflow-x-auto scroll-smooth no-scrollbar py-2 px-1 snap-x snap-mandatory"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {reviews.map((rev, idx) => (
-              <div
-                key={idx}
-                className="group relative shrink-0 w-[290px] sm:w-[350px] md:w-[380px] bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs hover:shadow-xl hover:border-brand-yellow transition-all duration-300 flex flex-col justify-between snap-start"
-              >
-                <Quote className="w-10 h-10 text-amber-200 absolute right-5 top-5 opacity-40 group-hover:opacity-80 transition-opacity" />
-
-                <div>
-                  {/* Rating Stars */}
-                  <div className="flex items-center gap-1 mb-3 text-amber-400">
+        {/* Scrollable Container */}
+        <div
+          ref={sliderRef}
+          onScroll={checkScroll}
+          className="flex gap-5 sm:gap-6 overflow-x-auto scroll-smooth py-3 px-1 snap-x snap-mandatory no-scrollbar"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {reviews.map((rev, idx) => (
+            <div
+              key={idx}
+              className="shrink-0 w-[290px] sm:w-[350px] md:w-[380px] p-6 rounded-3xl bg-white border border-gray-200/90 hover:border-emerald-400 shadow-xs hover:shadow-xl hover:shadow-emerald-950/5 transition-all duration-300 flex flex-col justify-between snap-start relative group"
+            >
+              <div>
+                {/* Quote Icon & Rating */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-1 text-amber-500">
                     {[...Array(rev.rating)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
-                    <span className="text-xs font-bold text-gray-700 ml-1.5">৫.০</span>
                   </div>
-
-                  {/* Comment Text */}
-                  <p className="text-gray-700 text-sm leading-relaxed mb-4 italic">
-                    “{rev.comment}”
-                  </p>
+                  <Quote className="w-8 h-8 text-emerald-100 group-hover:text-emerald-200 transition-colors" />
                 </div>
 
-                {/* Reviewer Details */}
-                <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <div>
-                    <h4 className="font-bold text-gray-900 text-sm">{rev.name}</h4>
-                    <p className="text-xs text-gray-500">{rev.location}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200 block mb-0.5">
-                      {rev.product}
-                    </span>
-                    <span className="text-[10px] text-gray-400">{rev.date}</span>
-                  </div>
-                </div>
+                {/* Comment Text */}
+                <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-6 italic">
+                  "{rev.comment}"
+                </p>
               </div>
-            ))}
-          </div>
+
+              {/* Reviewer Details */}
+              <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="font-extrabold text-gray-900 text-sm sm:text-base font-heading">
+                      {rev.name}
+                    </h4>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />
+                  </div>
+                  <span className="text-xs text-gray-500 block">
+                    {rev.location}
+                  </span>
+                </div>
+                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                  {rev.product}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

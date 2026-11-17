@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LiveProduct } from "@/lib/woocommerce";
-import { ShoppingCart, Check, Loader2, Heart } from "lucide-react";
+import { ShoppingCart, Check, Loader2, Heart, Sparkles, Eye, ArrowRight } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
@@ -29,7 +29,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
     setBtnState("adding");
 
-    // Add item without auto opening drawer immediately
     addToCart(
       {
         id: product.id,
@@ -44,7 +43,6 @@ export function ProductCard({ product }: ProductCardProps) {
       false
     );
 
-    // Show checkmark animation then trigger drawer slide-in
     setTimeout(() => {
       setBtnState("added");
       setTimeout(() => {
@@ -58,27 +56,29 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group bg-white rounded-2xl border border-gray-200/90 hover:border-brand-green hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
-      {/* Product Image Area with Link */}
-      <Link href={`/product/${product.slug}`} className="relative w-full pt-[90%] bg-gray-50 overflow-hidden block">
-        <Image
-          src={product.images[0]?.src || "/placeholder.jpg"}
-          alt={product.name}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+    <div className="group bg-white rounded-xl sm:rounded-2xl border border-gray-200/80 hover:border-emerald-500/50 shadow-xs hover:shadow-xl hover:shadow-emerald-950/8 transition-all duration-300 flex flex-col overflow-hidden relative">
+      {/* Product Image Area */}
+      <div className="relative w-full pt-[92%] bg-gradient-to-b from-gray-50/60 to-white overflow-hidden block">
+        <Link href={`/product/${product.slug}`} prefetch={true} className="absolute inset-0 block">
+          <Image
+            src={product.images[0]?.src || "/placeholder.jpg"}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+          />
+        </Link>
 
-        {/* Premium Save Badge */}
+        {/* Savings Badge - Left Aligned */}
         {savings > 0 && (
-          <div className="absolute top-3 right-3 z-10">
-            <div className="flex items-center gap-1 bg-gradient-to-r from-red-600 via-rose-600 to-red-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-md shadow-red-500/30 border border-white/25 backdrop-blur-xs tracking-wide">
-              <span>Save ৳{savings}</span>
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 pointer-events-none">
+            <div className="flex items-center gap-1 bg-gradient-to-r from-amber-600 to-rose-600 text-white text-[10px] sm:text-[11px] font-black px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-full shadow-md shadow-rose-900/20 border border-white/20 tracking-wide">
+              <span>৳{savings} ছাড়</span>
             </div>
           </div>
         )}
 
-        {/* Wishlist Heart Toggle Button */}
+        {/* Floating Quick Action: Wishlist - Top Right */}
         <button
           type="button"
           onClick={(e) => {
@@ -93,79 +93,84 @@ export function ProductCard({ product }: ProductCardProps) {
               image: product.images[0]?.src || "/placeholder.jpg",
             });
           }}
-          className={`absolute top-3 left-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-xs ${
+          className={`absolute top-2 right-2 sm:top-3 sm:right-3 z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-md cursor-pointer ${
             isFav
-              ? "bg-rose-50 text-rose-600 opacity-100 scale-105"
-              : "bg-white/90 hover:bg-white text-gray-500 hover:text-rose-500 sm:opacity-0 sm:group-hover:opacity-100 opacity-90"
+              ? "bg-rose-50 text-rose-600 scale-105 border border-rose-200"
+              : "bg-white text-gray-600 hover:text-rose-500 hover:scale-110 border border-gray-100"
           }`}
-          aria-label={isFav ? "Remove from wishlist" : "Add to wishlist"}
-          title={isFav ? "উইশলিস্ট থেকে মুছুন" : "উইশলিস্টে যুক্ত করুন"}
+          aria-label="পছন্দের তালিকায় রাখুন"
         >
-          <Heart className={`w-4 h-4 transition-transform active:scale-125 ${isFav ? "fill-rose-500 text-rose-500" : ""}`} />
+          <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isFav ? "fill-rose-500 text-rose-500" : ""}`} />
         </button>
-      </Link>
+      </div>
 
-      {/* Product Info Section */}
-      <div className="p-4 flex flex-col flex-1 text-center sm:text-left">
-        {/* Title linked to Single Product Page (18px) */}
-        <h3 className="font-bold text-gray-950 text-[17px] sm:text-[18px] leading-snug line-clamp-2 hover:text-brand-green transition-colors mb-2 min-h-[2.9rem]">
-          <Link href={`/product/${product.slug}`}>
-            {product.name}
+      {/* Product Content Details */}
+      <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
+        <div>
+          {/* Category Name */}
+          {product.categories && product.categories[0] && (
+            <span className="text-[11px] font-bold text-emerald-700 tracking-wider uppercase block mb-1">
+              {product.categories[0].name}
+            </span>
+          )}
+
+          {/* Product Title */}
+          <Link href={`/product/${product.slug}`} prefetch={true} className="block">
+            <h3 className="font-extrabold text-sm sm:text-base text-gray-900 hover:text-emerald-800 transition-colors line-clamp-2 leading-snug mb-2 font-heading">
+              {product.name}
+            </h3>
           </Link>
-        </h3>
-
-        {/* Price Row */}
-        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-3 mt-auto">
-          {/* Current Price */}
-          <span className="text-lg sm:text-xl font-black text-gray-950">
-            ৳{current}
-          </span>
-
-          {/* Regular Price with Strikethrough */}
-          {savings > 0 && (
-            <span className="text-sm text-gray-400 line-through font-medium">
-              ৳{regular}
-            </span>
-          )}
-
-          {/* Subtle Inline Savings Chip */}
-          {savings > 0 && (
-            <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
-              ৳{savings} OFF
-            </span>
-          )}
         </div>
 
-        {/* Animated "Add to Cart" Button */}
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={btnState !== "idle"}
-          className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-black text-sm sm:text-base tracking-wide shadow-xs transition-all duration-300 cursor-pointer ${
-            btnState === "added"
-              ? "bg-brand-green text-white scale-[1.02] shadow-emerald-600/30"
-              : btnState === "adding"
-              ? "bg-amber-400 text-brand-dark opacity-90 scale-95"
-              : "bg-brand-yellow hover:bg-brand-yellow-hover text-brand-dark hover:shadow-md active:scale-[0.98]"
-          }`}
-        >
-          {btnState === "adding" ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin text-brand-dark" />
-              <span>Adding...</span>
-            </>
-          ) : btnState === "added" ? (
-            <>
-              <Check className="w-4 h-4 stroke-[3] text-white animate-in zoom-in-50 duration-200" />
-              <span>Added!</span>
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="w-4 h-4 stroke-[2.2]" />
-              <span>Add to Cart</span>
-            </>
-          )}
-        </button>
+        {/* Pricing & Add to Cart Action */}
+        <div className="pt-2 border-t border-gray-100 mt-2">
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="text-base sm:text-xl font-black text-gray-900">
+              ৳{current.toLocaleString()}
+            </span>
+            {regular > current && (
+              <span className="text-xs sm:text-sm font-semibold text-gray-400 line-through">
+                ৳{regular.toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          {/* Premium Add to Cart / Order Button */}
+          <button
+            onClick={handleAddToCart}
+            disabled={btnState === "adding"}
+            className={`group/btn relative overflow-hidden w-full py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-lg sm:rounded-xl font-black text-[12px] sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-300 cursor-pointer select-none whitespace-nowrap ${
+              btnState === "added"
+                ? "bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 text-white shadow-[0_4px_16px_rgba(5,150,105,0.4)] border border-emerald-400/50 scale-[1.01]"
+                : btnState === "adding"
+                ? "bg-emerald-800 text-white opacity-90 cursor-wait shadow-sm"
+                : "bg-gradient-to-r from-[#063b23] via-[#0d6437] to-[#063b23] hover:from-[#09472b] hover:via-[#117641] hover:to-[#09472b] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.32),0_4px_12px_rgba(6,59,35,0.22)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_8px_20px_rgba(6,59,35,0.32)] border border-emerald-600/30 hover:border-emerald-400/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+            }`}
+          >
+            {/* Shimmer light beam sweep on hover */}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+
+            {btnState === "adding" ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-white shrink-0" />
+                <span className="tracking-tight sm:tracking-wide whitespace-nowrap">যোগ হচ্ছে...</span>
+              </>
+            ) : btnState === "added" ? (
+              <>
+                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3] text-white shrink-0" />
+                <span className="tracking-tight sm:tracking-wide font-extrabold whitespace-nowrap">যুক্ত হয়েছে!</span>
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0 group-hover/btn:scale-110 transition-transform duration-300" />
+                <span className="font-extrabold tracking-tight sm:tracking-wide drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)] whitespace-nowrap">
+                  অর্ডার করুন
+                </span>
+                <ArrowRight className="hidden sm:inline-block w-3.5 h-3.5 text-emerald-200/80 -ml-0.5 opacity-60 group-hover/btn:opacity-100 group-hover/btn:translate-x-0.5 transition-all duration-300 shrink-0" />
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

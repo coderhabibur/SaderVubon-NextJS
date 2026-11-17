@@ -19,8 +19,21 @@ export default function WishlistPage() {
 
   if (!isClient) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green" />
+      <div className="bg-gray-50 flex-1 py-10 animate-pulse">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="h-8 w-48 bg-gray-200 rounded-xl mb-3" />
+          <div className="h-4 w-72 bg-gray-200 rounded mb-8" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3">
+                <div className="w-full aspect-square bg-gray-100 rounded-xl" />
+                <div className="h-4 w-3/4 bg-gray-200 rounded" />
+                <div className="h-4 w-1/2 bg-gray-100 rounded" />
+                <div className="h-9 w-full bg-emerald-100 rounded-xl pt-2" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -52,7 +65,7 @@ export default function WishlistPage() {
 
   return (
     <div className="bg-gray-50 flex-1 py-6 sm:py-10">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 lg:px-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-brand-green transition">

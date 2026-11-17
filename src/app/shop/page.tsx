@@ -2,69 +2,31 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { ShopClientView } from "./ShopClientView";
-import { getFilteredProductsWithPagination, getLiveCategories } from "@/lib/woocommerce";
+import { getFilteredProductsWithPagination, getLiveCategories, getLiveAttributesWithTerms } from "@/lib/woocommerce";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "শপ - সকল প্রাকৃতিক খাদ্য সামগ্রী | স্বাদের ভুবন",
   description: "গ্রাম-বাংলার ১০০% খাঁটি ও বিশুদ্ধ প্রাকৃতিক খাদ্য সামগ্রী। সুন্দরবনের চাকভাঙা মধু, খাঁটি খেজুরের গুড়, ঘানির সরিষার তেল ও ঘরোয়া আচার।",
 };
 
-interface ShopPageProps {
-  searchParams: Promise<{
-    category?: string;
-    sort?: string;
-    min_price?: string;
-    max_price?: string;
-    page?: string;
-  }>;
-}
-
-export default async function ShopPage({ searchParams }: ShopPageProps) {
-  const resolvedParams = await searchParams;
-  const currentCategory = resolvedParams.category || "all";
-  const currentSort = resolvedParams.sort || "newest";
-  const minPrice = resolvedParams.min_price;
-  const maxPrice = resolvedParams.max_price;
-  const page = resolvedParams.page ? Number(resolvedParams.page) : 1;
-
-  const categories = await getLiveCategories();
-
-  // Determine category ID if filtering by slug
-  let categoryId: number | undefined;
-  if (currentCategory && currentCategory !== "all") {
-    const matched = categories.find(
-      (c) => c.slug.toLowerCase() === currentCategory.toLowerCase()
-    );
-    if (matched) {
-      categoryId = matched.id;
-    }
-  }
-
-  // Determine sort parameters
-  let orderby: "date" | "price" | "popularity" | "title" = "date";
-  let order: "asc" | "desc" = "desc";
-
-  if (currentSort === "price_asc") {
-    orderby = "price";
-    order = "asc";
-  } else if (currentSort === "price_desc") {
-    orderby = "price";
-    order = "desc";
-  }
+export default async function ShopPage() {
+  const [categories, attributes] = await Promise.all([
+    getLiveCategories(),
+    getLiveAttributesWithTerms(),
+  ]);
 
   const { products, total, totalPages, currentPage } = await getFilteredProductsWithPagination({
-    category: categoryId,
-    min_price: minPrice,
-    max_price: maxPrice,
-    orderby,
-    order,
-    page,
+    orderby: "date",
+    order: "desc",
+    page: 1,
     per_page: 12,
   });
 
   return (
     <div className="bg-gray-50 flex-1 py-6 sm:py-10">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 lg:px-8">
         {/* 1. Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-brand-green transition">
@@ -94,11 +56,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         {/* 3. 2-Column Layout with Filter Sidebar & AJAX Pagination */}
         <ShopClientView
           categories={categories}
+          attributes={attributes}
           products={products}
-          currentCategory={currentCategory}
-          currentSort={currentSort}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
           total={total}
           totalPages={totalPages}
           currentPage={currentPage}

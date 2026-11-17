@@ -10,11 +10,13 @@ import { LiveProduct } from "@/lib/woocommerce";
 interface SearchAutocompleteProps {
   placeholder?: string;
   isMobile?: boolean;
+  autoFocus?: boolean;
 }
 
 export function SearchAutocomplete({
   placeholder = "Search honey, jaggery, mustard oil, pickles...",
   isMobile = false,
+  autoFocus = false,
 }: SearchAutocompleteProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -114,6 +116,7 @@ export function SearchAutocomplete({
           <div className="relative flex-1 flex items-center">
             <input
               type="text"
+              autoFocus={autoFocus}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => {

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
 import { CartProvider } from "@/context/CartContext";
@@ -8,6 +9,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -142,6 +144,9 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
+              <Suspense fallback={null}>
+                <ScrollToTop />
+              </Suspense>
               <Header />
               <main className="flex-1 flex flex-col pb-16 md:pb-0">
                 {children}

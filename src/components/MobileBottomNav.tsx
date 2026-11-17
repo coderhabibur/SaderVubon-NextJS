@@ -10,6 +10,15 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   const { totalItems, openDrawer } = useCart();
 
+  const isFunnelPage =
+    pathname === "/khejur-gur-patali-jhola" ||
+    pathname?.startsWith("/khejur-gur-patali-jhola") ||
+    pathname === "/order" ||
+    pathname === "/landing";
+  if (isFunnelPage) {
+    return null;
+  }
+
   const isHome = pathname === "/";
   const isShop = pathname === "/shop" || pathname.startsWith("/category");
   const isTrack = pathname === "/track-order";

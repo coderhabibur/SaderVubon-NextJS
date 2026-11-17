@@ -5,39 +5,169 @@
 @tailwind utilities;
 
 :root {
-  /* Sadervubon Brand Color Palette */
-  --primary-yellow: #fcb700;        /* Search button, Cart badge, Martfury Accent */
-  --primary-yellow-hover: #e5a700;
-  --primary-green: #669900;         /* Shop Now green, Eco badges */
-  --primary-green-hover: #558000;
-  --brand-blue: #0066cc;            /* Logo blue text / accents */
+  /* Sadervubon Brand Color Palette - Elevated Luxury Organic */
+  --primary-yellow: #f59e0b;        /* Warm Royal Amber Gold */
+  --primary-yellow-hover: #d97706;
+  --primary-green: #107c41;         /* Deep Rich Forest / Emerald Green */
+  --primary-green-hover: #0b5c2f;
+  --brand-blue: #0066cc;
   
   --bg-main: #ffffff;
-  --bg-light: #f7f7f7;
-  --text-main: #222222;
-  --text-muted: #666666;
-  --border-color: #e5e5e5;
+  --bg-light: #faf9f6;             /* Warm organic ivory / cream */
+  --text-main: #18201a;             /* Deep charcoal green */
+  --text-muted: #57655d;
+  --border-color: #e6e8e5;
 }
 
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 155px;
+}
+
+@media (max-width: 1023px) {
+  html {
+    scroll-padding-top: 105px;
+  }
 }
 
 body {
   color: var(--text-main);
   background-color: var(--bg-main);
-  font-family: 'Hind Siliguri', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Anek Bangla', 'Hind Siliguri', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 1rem;
   line-height: 1.5;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+}
+
+/* Glassmorphism & Premium Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-dark {
+  background: rgba(6, 43, 30, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Organic Gradient Backgrounds */
+.gradient-forest {
+  background: linear-gradient(135deg, #063222 0%, #0a4d34 50%, #042418 100%);
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+}
+
+.gradient-cream {
+  background: radial-gradient(circle at top right, rgba(251, 191, 36, 0.08), transparent 60%),
+              radial-gradient(circle at bottom left, rgba(16, 124, 65, 0.08), transparent 60%),
+              #faf9f6;
+}
+
+/* Subtle Shimmer for Highlighting */
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: shimmer 3s infinite;
+}
+
+/* Dual Range Slider Styling */
+.dual-range-slider {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 0;
+  width: 100%;
+  outline: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.dual-range-slider::-webkit-slider-thumb {
+  pointer-events: all;
+  position: relative;
+  z-index: 30;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: #064e3b;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.dual-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background-color: #042f24;
+}
+.dual-range-slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  background-color: #0f766e;
+}
+.dual-range-slider::-moz-range-thumb {
+  pointer-events: all;
+  position: relative;
+  z-index: 30;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: #064e3b;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.dual-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  background-color: #042f24;
+}
+.dual-range-slider::-moz-range-thumb:active {
+  transform: scale(1.2);
+  background-color: #0f766e;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f3f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #c2c9c2;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #107c41;
 }
 
 /* Rich eCommerce Product Description Typography */
@@ -78,49 +208,12 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .prose-sadervubon ul li {
   position: relative;
   padding-left: 1.75rem;
-  line-height: 1.65;
 }
 .prose-sadervubon ul li::before {
-  content: "✔";
+  content: "✓";
   position: absolute;
   left: 0;
-  color: #669900;
-  font-weight: 900;
-  font-size: 0.9rem;
-}
-.prose-sadervubon ol {
-  list-style-type: decimal;
-  padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
-}
-.prose-sadervubon ol li {
-  margin-bottom: 0.4rem;
-}
-.prose-sadervubon strong,
-.prose-sadervubon b {
-  color: #111827;
-  font-weight: 700;
-}
-.prose-sadervubon table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1.5rem;
-}
-.prose-sadervubon th,
-.prose-sadervubon td {
-  border: 1px solid #e5e7eb;
-  padding: 0.65rem 1rem;
-}
-.prose-sadervubon th {
-  background-color: #f9fafb;
-  font-weight: 700;
-}
-
-/* Hide scrollbar utility for clean mobile scrolling */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  top: 0;
+  color: #107c41;
+  font-weight: 800;
 }

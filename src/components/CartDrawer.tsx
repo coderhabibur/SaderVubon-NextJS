@@ -267,10 +267,12 @@ export function CartDrawer() {
                 <Link
                   href="/checkout"
                   onClick={closeDrawer}
-                  className="w-full flex items-center justify-center gap-1.5 bg-brand-green hover:bg-brand-green-hover text-white py-3 px-3 rounded-xl font-black text-xs sm:text-sm shadow-md transition-all active:scale-[0.98] text-center cursor-pointer"
+                  className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#063b23] via-[#0d6437] to-[#063b23] hover:from-[#09472b] hover:via-[#117641] hover:to-[#09472b] text-white py-3 px-3 rounded-xl font-black text-xs sm:text-sm shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_4px_14px_rgba(6,59,35,0.25)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_8px_20px_rgba(6,59,35,0.35)] border border-emerald-600/30 hover:border-emerald-400/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all text-center cursor-pointer select-none"
                 >
+                  {/* Shimmer sweep */}
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
                   <span>Checkout</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
 

@@ -53,12 +53,28 @@ export interface ProductQueryParams {
   search?: string;
   min_price?: string | number;
   max_price?: string | number;
+  attribute?: string;
+  attribute_term?: string | number;
   per_page?: number;
   page?: number;
   orderby?: "date" | "price" | "popularity" | "rating" | "title";
   order?: "asc" | "desc";
   featured?: boolean;
   on_sale?: boolean;
+}
+
+export interface AttributeTerm {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+}
+
+export interface AttributeFilterGroup {
+  id: number;
+  name: string;
+  slug: string;
+  terms: AttributeTerm[];
 }
 
 export interface PaginatedProductsResult {
@@ -83,6 +99,8 @@ export async function getFilteredProductsWithPagination(
     if (params.category) query.set("category", String(params.category));
     if (params.min_price) query.set("min_price", String(params.min_price));
     if (params.max_price) query.set("max_price", String(params.max_price));
+    if (params.attribute) query.set("attribute", params.attribute);
+    if (params.attribute_term) query.set("attribute_term", String(params.attribute_term));
     if (params.orderby) query.set("orderby", params.orderby);
     if (params.order) query.set("order", params.order);
     if (params.featured) query.set("featured", "true");
@@ -90,7 +108,7 @@ export async function getFilteredProductsWithPagination(
 
     const res = await fetch(`${WORDPRESS_URL}/wp-json/wc/v3/products?${query.toString()}`, {
       headers: getAuthHeader(),
-      next: { revalidate: 120 },
+      next: { revalidate: 300 },
     });
 
     if (!res.ok) {
@@ -123,6 +141,8 @@ export async function getFilteredProducts(params: ProductQueryParams = {}): Prom
     if (params.category) query.set("category", String(params.category));
     if (params.min_price) query.set("min_price", String(params.min_price));
     if (params.max_price) query.set("max_price", String(params.max_price));
+    if (params.attribute) query.set("attribute", params.attribute);
+    if (params.attribute_term) query.set("attribute_term", String(params.attribute_term));
     if (params.orderby) query.set("orderby", params.orderby);
     if (params.order) query.set("order", params.order);
     if (params.featured) query.set("featured", "true");
@@ -130,7 +150,7 @@ export async function getFilteredProducts(params: ProductQueryParams = {}): Prom
 
     const res = await fetch(`${WORDPRESS_URL}/wp-json/wc/v3/products?${query.toString()}`, {
       headers: getAuthHeader(),
-      next: { revalidate: 120 },
+      next: { revalidate: 300 },
     });
 
     if (!res.ok) return [];
@@ -239,7 +259,7 @@ export async function getLiveCategories(): Promise<{ id: number; name: string; s
       `${WORDPRESS_URL}/wp-json/wc/v3/products/categories?per_page=15&hide_empty=true`,
       {
         headers: getAuthHeader(),
-        next: { revalidate: 300 },
+        next: { revalidate: 3600 },
       }
     );
 
@@ -335,6 +355,45 @@ export async function createWooCommerceOrder(payload: CreateOrderPayload): Promi
   }
 
   return await res.json();
+}
+
+export async function getLiveAttributesWithTerms(): Promise<AttributeFilterGroup[]> {
+  try {
+    const res = await fetch(`${WORDPRESS_URL}/wp-json/wc/v3/products/attributes`, {
+      headers: getAuthHeader(),
+      next: { revalidate: 3600 },
+    });
+
+    if (!res.ok) return [];
+    const attributes: { id: number; name: string; slug: string }[] = await res.json();
+
+    const groups: AttributeFilterGroup[] = await Promise.all(
+      attributes.map(async (attr) => {
+        try {
+          const termsRes = await fetch(
+            `${WORDPRESS_URL}/wp-json/wc/v3/products/attributes/${attr.id}/terms?per_page=50&hide_empty=true`,
+            {
+              headers: getAuthHeader(),
+              next: { revalidate: 3600 },
+            }
+          );
+          if (!termsRes.ok) return { ...attr, terms: [] };
+          const terms: AttributeTerm[] = await termsRes.json();
+          return {
+            ...attr,
+            terms: terms.filter((t) => t.count > 0),
+          };
+        } catch {
+          return { ...attr, terms: [] };
+        }
+      })
+    );
+
+    return groups.filter((g) => g.terms.length > 0);
+  } catch (err) {
+    console.error("Error fetching attributes with terms:", err);
+    return [];
+  }
 }
 
 export async function getOrderById(orderId: number | string): Promise<WcOrderResponse | null> {
