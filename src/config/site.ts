@@ -29,7 +29,7 @@ export const siteConfig = {
   ],
   
   contact: {
-    hotline: "09613-823813",
+    hotline: "01305762659",
     phone: "01305762659",
     whatsapp: "01305762659",
     imo: "01305762659",
@@ -64,7 +64,7 @@ export const siteConfig = {
     {
       title: "২৪/৭ ডেডিকেটেড সাপোর্ট",
       englishTitle: "24/7 Support",
-      description: "হটলাইন: 09613-823813",
+      description: "হটলাইন: 01305762659",
     },
   ],
 

@@ -154,6 +154,32 @@ export function MobileOffcanvasMenu({ isOpen, onClose }: MobileOffcanvasMenuProp
                 </Link>
 
                 <Link
+                  href="/category/taler-gur"
+                  onClick={onClose}
+                  className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition ${
+                    isLinkActive("/category/taler-gur")
+                      ? "bg-emerald-50 text-brand-green font-bold"
+                      : "hover:bg-gray-100 hover:text-brand-green"
+                  }`}
+                >
+                  <span>Traditional Palm Jaggery (তালের গুড়)</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                </Link>
+
+                <Link
+                  href="/category/pickle"
+                  onClick={onClose}
+                  className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition ${
+                    isLinkActive("/category/pickle")
+                      ? "bg-emerald-50 text-brand-green font-bold"
+                      : "hover:bg-gray-100 hover:text-brand-green"
+                  }`}
+                >
+                  <span>Homemade Pickles</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                </Link>
+
+                <Link
                   href="/category/honey"
                   onClick={onClose}
                   className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition ${
@@ -176,19 +202,6 @@ export function MobileOffcanvasMenu({ isOpen, onClose }: MobileOffcanvasMenuProp
                   }`}
                 >
                   <span>Pure Mustard Oil</span>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                </Link>
-
-                <Link
-                  href="/category/pickle"
-                  onClick={onClose}
-                  className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition ${
-                    isLinkActive("/category/pickle")
-                      ? "bg-emerald-50 text-brand-green font-bold"
-                      : "hover:bg-gray-100 hover:text-brand-green"
-                  }`}
-                >
-                  <span>Homemade Pickles</span>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
                 </Link>
 

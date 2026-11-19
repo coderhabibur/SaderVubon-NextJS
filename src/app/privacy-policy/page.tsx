@@ -4,8 +4,11 @@ import { ChevronRight, Lock, ShieldCheck } from "lucide-react";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Sader Vubon",
-  description: "Learn how Sader Vubon collects, protects, and securely manages your personal data and shopping privacy.",
+  title: `গোপনীয়তা নীতি (Privacy Policy) | ${siteConfig.name}`,
+  description: `স্বাদের ভুবনে আপনার ব্যক্তিগত তথ্যের নিরাপত্তা ও সুরক্ষার অঙ্গীকার। আমরা গ্রাহকের তথ্যের সর্বোচ্চ গোপনীয়তা রক্ষা করি।`,
+  alternates: {
+    canonical: `${siteConfig.url}/privacy-policy`,
+  },
 };
 
 export default function PrivacyPolicyPage() {

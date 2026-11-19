@@ -35,6 +35,7 @@ interface ShopFilterSidebarProps {
 const CATEGORY_MAP: Record<string, string> = {
   all: "সকল পণ্য",
   gur: "খেজুর ও আখের গুড়",
+  "taler-gur": "তালের গুড়",
   honey: "সুন্দরবনের মধু",
   oil: "ঘানির সরিষার তেল",
   pickle: "ঘরোয়া স্পেশাল আচার",
@@ -224,7 +225,7 @@ export function ShopFilterSidebar({
     const name = cat.name.toLowerCase();
     if (slug === "all-products" || name === "all products") return false;
     if (slug === "uncategorized" || name === "uncategorized") return false;
-    if (slug.includes("%e0%a6") || slug === "taler-gur") return false;
+    if (slug.includes("%e0%a6")) return false;
     return true;
   });
 

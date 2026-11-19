@@ -3,12 +3,36 @@ import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { ShopClientView } from "./ShopClientView";
 import { getFilteredProductsWithPagination, getLiveCategories, getLiveAttributesWithTerms } from "@/lib/woocommerce";
+import { siteConfig } from "@/config/site";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "শপ - সকল প্রাকৃতিক খাদ্য সামগ্রী | স্বাদের ভুবন",
   description: "গ্রাম-বাংলার ১০০% খাঁটি ও বিশুদ্ধ প্রাকৃতিক খাদ্য সামগ্রী। সুন্দরবনের চাকভাঙা মধু, খাঁটি খেজুরের গুড়, ঘানির সরিষার তেল ও ঘরোয়া আচার।",
+  alternates: {
+    canonical: `${siteConfig.url}/shop`,
+  },
+  openGraph: {
+    title: "শপ - সকল প্রাকৃতিক খাদ্য সামগ্রী | স্বাদের ভুবন",
+    description: "গ্রাম-বাংলার ১০০% খাঁটি ও বিশুদ্ধ প্রাকৃতিক খাদ্য সামগ্রী। সুন্দরবনের চাকভাঙা মধু, খাঁটি খেজুরের গুড়, ঘানির সরিষার তেল ও ঘরোয়া আচার।",
+    url: `${siteConfig.url}/shop`,
+    type: "website",
+    images: [
+      {
+        url: "/logo.webp",
+        width: 800,
+        height: 600,
+        alt: "স্বাদের ভুবন শপ",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "শপ - সকল প্রাকৃতিক খাদ্য সামগ্রী | স্বাদের ভুবন",
+    description: "গ্রাম-বাংলার ১০০% খাঁটি ও বিশুদ্ধ প্রাকৃতিক খাদ্য সামগ্রী।",
+    images: ["/logo.webp"],
+  },
 };
 
 export default async function ShopPage() {

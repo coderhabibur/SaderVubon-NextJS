@@ -6,6 +6,9 @@ import { siteConfig } from "@/config/site";
 export const metadata: Metadata = {
   title: `শিপিং ও ডেলিভারি পলিসি | ${siteConfig.name}`,
   description: `স্বাদের ভুবনের দ্রুত ও নিরাপদ ডেলিভারি সংক্রান্ত বিস্তারিত তথ্য ও চার্জসমূহ। সারা দেশে হোম ডেলিভারি ও ক্যাশ অন ডেলিভারি সুবিধা।`,
+  alternates: {
+    canonical: `${siteConfig.url}/shipping-policy`,
+  },
 };
 
 export default function ShippingPolicyPage() {

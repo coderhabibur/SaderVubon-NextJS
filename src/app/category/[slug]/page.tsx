@@ -4,12 +4,13 @@ import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { ShopClientView } from "@/app/shop/ShopClientView";
 import { getFilteredProductsWithPagination, getLiveCategories, getLiveAttributesWithTerms, LiveProduct } from "@/lib/woocommerce";
+import { siteConfig } from "@/config/site";
 
 export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const supportedSlugs = ["gur", "honey", "oil", "pickle", "mango", "offer", "all-products"];
+  const supportedSlugs = ["gur", "honey", "oil", "pickle", "mango", "offer", "all-products", "taler-gur"];
   try {
     const liveCats = await getLiveCategories();
     const allSlugs = new Set([...supportedSlugs, ...liveCats.map((c) => c.slug)]);
@@ -29,6 +30,10 @@ const CATEGORY_NAMES_BN: Record<string, { title: string; subtitle: string }> = {
   gur: {
     title: "খেজুর ও আখের খাঁটি গুড়",
     subtitle: "যশোরের ঐতিহ্যবাহী দানাদার ও ঝোলা খেজুরের গুড় এবং অর্গানিক আখের গুড়। কোনো প্রকার চিনি বা হাইড্রোজ ছাড়া ১০০% খাঁটি।",
+  },
+  "taler-gur": {
+    title: "ঐতিহ্যবাহী খাঁটি তালের গুড়",
+    subtitle: "গ্রাম-বাংলার খাঁটি তালের রস থেকে তৈরি সম্পূর্ণ প্রাকৃতিক, সুস্বাদু ও ভেজালমুক্ত তালের গুড়।",
   },
   honey: {
     title: "সুন্দরবনের প্রাকৃতিক চাকভাঙা মধু",
@@ -63,10 +68,34 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
   const title = bnInfo ? `${bnInfo.title} | স্বাদের ভুবন` : `${decodedSlug} ক্যাটাগরি | স্বাদের ভুবন`;
   const description = bnInfo?.subtitle || "স্বাদের ভুবনের ১০০% খাঁটি ও প্রাকৃতিক খাদ্য সামগ্রী।";
+  const catUrl = `${siteConfig.url}/category/${encodeURIComponent(decodedSlug)}`;
 
   return {
     title,
     description,
+    alternates: {
+      canonical: catUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: catUrl,
+      type: "website",
+      images: [
+        {
+          url: "/logo.webp",
+          width: 800,
+          height: 600,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/logo.webp"],
+    },
   };
 }
 

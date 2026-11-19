@@ -13,12 +13,12 @@ import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { MobileOffcanvasMenu } from "@/components/MobileOffcanvasMenu";
 
 const NAV_ITEMS = [
-  { label: "হোম", href: "/" },
   { label: "সকল পণ্য", href: "/shop" },
   { label: "খেজুরের গুড়", href: "/category/gur" },
+  { label: "তালের গুড়", href: "/category/taler-gur" },
+  { label: "ঘরোয়া আচার", href: "/category/pickle" },
   { label: "খাঁটি মধু", href: "/category/honey" },
   { label: "ঘানির তেল", href: "/category/oil" },
-  { label: "ঘরোয়া আচার", href: "/category/pickle" },
   { label: "রাজশাহীর আম", href: "/category/mango" },
   { label: "🔥 ধামাকা অফার", href: "/category/offer", isSpecial: true },
   { label: "আমাদের কথা", href: "/about" },
@@ -157,8 +157,8 @@ export function Header() {
                   <span className="text-xl sm:text-2xl font-black text-gray-900 group-hover:text-emerald-800 transition-colors leading-none font-heading">
                     স্বাদের ভুবন
                   </span>
-                  <span className="text-[8px] sm:text-xs font-bold text-amber-600 tracking-widest uppercase mt-1">
-                    Pure & Organic Food
+                  <span className="text-[7px] sm:text-[9px] font-bold text-amber-600 tracking-wider uppercase mt-0.5 sm:mt-1">
+                    best in taste & purity
                   </span>
                 </div>
               </Link>

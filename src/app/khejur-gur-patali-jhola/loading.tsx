@@ -1,11 +1,11 @@
 export default function KhejurGurLoading() {
   return (
     <div className="bg-[#FAF8F5] min-h-screen animate-pulse font-sans">
-      {/* 2. Brand Bar Skeleton */}
+      {/* 1. Brand Bar Skeleton */}
       <div className="container mx-auto px-4 lg:px-8 pt-6 pb-2">
         <div className="flex items-center justify-between p-3.5 sm:px-6 rounded-2xl bg-white border border-[#E5D4C4] shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#E5D4C4]/50" />
+            <div className="w-11 sm:w-12 h-11 sm:h-12 rounded-2xl bg-[#E5D4C4]/60" />
             <div className="space-y-1.5">
               <div className="h-5 w-28 bg-[#DEC7B2]/70 rounded-md" />
               <div className="h-3 w-36 bg-[#DEC7B2]/40 rounded" />
@@ -16,63 +16,41 @@ export default function KhejurGurLoading() {
         </div>
       </div>
 
-      {/* 3. Hero Section Skeleton */}
-      <div className="container mx-auto px-4 lg:px-8 py-8 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Copy Skeleton */}
-          <div className="lg:col-span-6 space-y-5 text-center lg:text-left">
-            <div className="h-7 w-64 bg-[#FAF1E6] border border-[#E5D0BC] rounded-full mx-auto lg:mx-0" />
-            <div className="space-y-2.5">
-              <div className="h-10 sm:h-12 w-4/5 bg-[#6E2E16]/20 rounded-2xl mx-auto lg:mx-0" />
-              <div className="h-10 sm:h-12 w-3/5 bg-[#8B3A14]/25 rounded-2xl mx-auto lg:mx-0" />
-            </div>
-            <div className="space-y-2 max-w-xl mx-auto lg:mx-0 pt-2">
-              <div className="h-4 w-full bg-gray-200/80 rounded" />
-              <div className="h-4 w-5/6 bg-gray-200/80 rounded mx-auto lg:mx-0" />
-              <div className="h-4 w-2/3 bg-gray-200/80 rounded mx-auto lg:mx-0" />
-            </div>
+      {/* 2. Centered Hero Section Skeleton */}
+      <div className="container mx-auto px-4 lg:px-8 pt-8 pb-16 sm:pb-20">
+        <div className="max-w-4xl xl:max-w-5xl mx-auto flex flex-col items-center text-center">
+          {/* Rating Pill Skeleton */}
+          <div className="h-7 w-64 bg-[#FAF1E6] border border-[#E5D0BC] rounded-full mb-4" />
 
-            {/* 4 Feature Badges Grid Skeleton */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 max-w-lg mx-auto lg:mx-0">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3 bg-white p-3.5 rounded-2xl border border-[#E5D4C4]">
-                  <div className="w-8 h-8 rounded-xl bg-[#F6EDE2] shrink-0" />
-                  <div className="h-4 w-32 bg-gray-200 rounded" />
-                </div>
-              ))}
-            </div>
-
-            {/* 2 CTA Buttons Skeleton */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 justify-center lg:justify-start">
-              <div className="h-14 w-full sm:w-64 bg-[#8B3A14]/40 rounded-2xl" />
-              <div className="h-14 w-full sm:w-56 bg-[#25D366]/30 rounded-2xl" />
-            </div>
+          {/* Headline Molasses Banner Skeleton */}
+          <div className="w-full max-w-3xl h-28 sm:h-24 bg-[#7A2E12]/85 border-2 border-[#C25E18]/60 rounded-2xl sm:rounded-3xl mb-6 flex flex-col items-center justify-center gap-2.5 px-6">
+            <div className="h-5 w-4/5 bg-white/30 rounded-lg" />
+            <div className="h-4 w-1/2 bg-amber-300/40 rounded-md" />
           </div>
 
-          {/* Right Column: Interactive Showcase Skeleton */}
-          <div className="lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md sm:max-w-lg bg-white rounded-3xl p-4 border-2 border-[#E5D4C4] shadow-md space-y-3">
-              <div className="w-full aspect-[4/3] sm:aspect-square bg-[#F8EFE4] rounded-2xl" />
-              <div className="grid grid-cols-4 gap-2 pt-1">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-9 bg-[#FAF2E8] border border-[#DEC7B2] rounded-xl" />
-                ))}
-              </div>
-            </div>
+          {/* Centered CTA Button Skeleton */}
+          <div className="w-64 sm:w-72 h-14 bg-gradient-to-r from-[#8B3A14] via-[#A8471B] to-[#8B3A14] rounded-2xl mb-8 sm:mb-10 shadow-lg border border-[#C25E18]/70" />
+
+          {/* Centerpiece Showcase Image Frame Skeleton */}
+          <div className="relative max-w-xl sm:max-w-2xl lg:max-w-3xl w-full mx-auto bg-white rounded-[2rem] sm:rounded-[2.5rem] p-3 sm:p-4.5 border-2 border-[#E5D4C4] shadow-xl">
+            <div className="w-full aspect-[16/10] bg-[#F8EFE4] rounded-2xl sm:rounded-3xl" />
           </div>
+
+          {/* Reassurance Line Skeleton */}
+          <div className="h-5 w-80 max-w-full bg-[#5C240D]/20 rounded-full mt-7 sm:mt-9" />
         </div>
       </div>
 
-      {/* 4. Trust Pillars Ribbon Skeleton */}
-      <div className="container mx-auto px-4 lg:px-8 py-6">
-        <div className="max-w-6xl mx-auto bg-white rounded-3xl p-4 sm:p-6 border border-[#E5D4C4] shadow-xs">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* 3. Trust Pillars Ribbon Skeleton (Max-w-7xl) */}
+      <div className="relative z-20 -mt-8 sm:-mt-10 max-w-7xl mx-auto px-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-5 shadow-xs border border-[#E5D4C4]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 lg:gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-[#FAF7F2] p-3 rounded-2xl border border-[#E5D4C4] flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#8B3A14]/15 shrink-0" />
-                <div className="space-y-1.5 flex-1">
-                  <div className="h-4 w-20 bg-gray-200 rounded" />
-                  <div className="h-3 w-28 bg-gray-100 rounded" />
+              <div key={i} className="bg-[#FAF7F2] p-2.5 sm:p-3 lg:p-3.5 rounded-xl sm:rounded-2xl border border-[#E5D4C4] flex items-center gap-2.5 sm:gap-3">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl bg-[#8B3A14]/15 shrink-0" />
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="h-4 w-20 bg-gray-300/80 rounded" />
+                  <div className="h-3 w-28 bg-gray-200/60 rounded" />
                 </div>
               </div>
             ))}

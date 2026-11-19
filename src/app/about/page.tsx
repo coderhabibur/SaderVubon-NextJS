@@ -4,8 +4,18 @@ import { ChevronRight, ShieldCheck, HeartHandshake, Sprout, Award, Phone, CheckC
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "About Us | Sader Vubon",
-  description: "Learn about Sader Vubon - our story, mission, and commitment to providing 100% pure, natural, and authentic organic food directly from local farmers.",
+  title: "আমাদের সম্পর্কে | স্বাদের ভুবন (Sader Vubon)",
+  description: "জানুন স্বাদের ভুবনের গল্প, উদ্দেশ্য ও অঙ্গীকার। গ্রাম-বাংলার বিশ্বস্ত কৃষক ও গাছিদের কাছ থেকে ১০০% নির্ভেজাল ও প্রাকৃতিক খাদ্য উপাদান।",
+  alternates: {
+    canonical: `${siteConfig.url}/about`,
+  },
+  openGraph: {
+    title: "আমাদের সম্পর্কে | স্বাদের ভুবন (Sader Vubon)",
+    description: "গ্রাম-বাংলার বিশ্বস্ত কৃষক ও গাছিদের কাছ থেকে ১০০% নির্ভেজাল ও প্রাকৃতিক খাদ্য উপাদান।",
+    url: `${siteConfig.url}/about`,
+    type: "website",
+    images: ["/logo.webp"],
+  },
 };
 
 export default function AboutPage() {

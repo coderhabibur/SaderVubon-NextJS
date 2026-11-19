@@ -63,24 +63,24 @@ export default function CheckoutPage() {
 
     // Validation
     if (!name.trim()) {
-      setErrorMessage("Please enter your full name.");
+      setErrorMessage("অনুগ্রহ করে আপনার নাম লিখুন।");
       return;
     }
 
     const cleanPhone = phone.replace(/[^\d+]/g, "");
     const bdPhoneRegex = /^(?:\+88|88)?01[3-9]\d{8}$/;
     if (!bdPhoneRegex.test(cleanPhone)) {
-      setErrorMessage("Please enter a valid 11-digit mobile number (e.g. 017XXXXXXXX).");
+      setErrorMessage("অনুগ্রহ করে সঠিক ১১ ডিজিটের মোবাইল নম্বর লিখুন (যেমন: 017XXXXXXXX)।");
       return;
     }
 
     if (!address.trim() || address.trim().length < 5) {
-      setErrorMessage("Please enter your complete delivery address (House, Road, Area).");
+      setErrorMessage("অনুগ্রহ করে আপনার সম্পূর্ণ ডেলিভারি ঠিকানা লিখুন (বাসা, রোড, এলাকা/গ্রাম)।");
       return;
     }
 
     if (items.length === 0) {
-      setErrorMessage("Your cart is empty. Please add items to place an order.");
+      setErrorMessage("আপনার কার্ট খালি। অনুগ্রহ করে পণ্য যোগ করুন।");
       return;
     }
 
@@ -225,7 +225,7 @@ export default function CheckoutPage() {
                   {/* Name Field */}
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
-                      Full Name <span className="text-red-500">*</span>
+                      আপনার নাম <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="e.g. Ariful Islam"
+                        placeholder="আপনার নাম লিখুন"
                         className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition"
                       />
                     </div>
@@ -245,9 +245,9 @@ export default function CheckoutPage() {
                   {/* Phone Field */}
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
-                      Mobile Number <span className="text-red-500">*</span>
+                      মোবাইল নাম্বার <span className="text-red-500">*</span>
                       <span className="text-gray-400 font-normal text-xs ml-1">
-                        (For delivery contact & updates)
+                        (ডেলিভারির যোগাযোগের জন্য)
                       </span>
                     </label>
                     <div className="relative">
@@ -259,8 +259,28 @@ export default function CheckoutPage() {
                         required
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="e.g. 017XXXXXXXX"
+                        placeholder="১১ ডিজিটের মোবাইল নম্বর লিখুন (যেমন: 017XXXXXXXX)"
                         className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Address Field */}
+                  <div>
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
+                      সম্পূর্ণ ডেলিভারি ঠিকানা <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute top-3 left-3.5 pointer-events-none text-gray-400">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <textarea
+                        required
+                        rows={3}
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="বাসা নং, রোড নং, এলাকা/গ্রাম, থানা ও জেলার নাম বিস্তারিত লিখুন..."
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition resize-none"
                       />
                     </div>
                   </div>
@@ -268,13 +288,13 @@ export default function CheckoutPage() {
                   {/* Delivery Zone Selector */}
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2">
-                      Select Delivery Area <span className="text-red-500">*</span>
+                      ডেলিভারি এরিয়া নির্বাচন করুন <span className="text-red-500">*</span>
                     </label>
 
                     {isFreeDelivery && (
                       <div className="mb-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-xs text-brand-green font-bold">
                         <Sparkles className="w-4 h-4 shrink-0 text-emerald-600" />
-                        <span>Free Delivery on orders over ৳2500! 🎉</span>
+                        <span>৳২৫০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি! 🎉</span>
                       </div>
                     )}
 
@@ -296,12 +316,12 @@ export default function CheckoutPage() {
                             className="w-4 h-4 text-brand-green focus:ring-brand-green"
                           />
                           <div>
-                            <p className="text-sm font-black text-gray-900">Inside Dhaka</p>
-                            <p className="text-xs text-gray-500">Home Delivery (1-2 days)</p>
+                            <p className="text-sm font-black text-gray-900">ঢাকার সিটির ভেতরে</p>
+                            <p className="text-xs text-gray-500">হোম ডেলিভারি (১-২ দিন)</p>
                           </div>
                         </div>
-                        <span className="text-sm font-black text-brand-dark">
-                          {isFreeDelivery ? "৳0 (Free)" : "৳70"}
+                        <span className="text-sm font-black text-brand-green">
+                          {isFreeDelivery ? "ফ্রি" : "৳৭০"}
                         </span>
                       </label>
 
@@ -322,41 +342,21 @@ export default function CheckoutPage() {
                             className="w-4 h-4 text-brand-green focus:ring-brand-green"
                           />
                           <div>
-                            <p className="text-sm font-black text-gray-900">Outside Dhaka</p>
-                            <p className="text-xs text-gray-500">Nationwide (2-3 days)</p>
+                            <p className="text-sm font-black text-gray-900">ঢাকার বাইরে সারা দেশে</p>
+                            <p className="text-xs text-gray-500">হোম ডেলিভারি (২-৩ দিন)</p>
                           </div>
                         </div>
-                        <span className="text-sm font-black text-brand-dark">
-                          {isFreeDelivery ? "৳0 (Free)" : "৳130"}
+                        <span className="text-sm font-black text-brand-green">
+                          {isFreeDelivery ? "ফ্রি" : "৳১৩০"}
                         </span>
                       </label>
-                    </div>
-                  </div>
-
-                  {/* Address Field */}
-                  <div>
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
-                      Full Delivery Address <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute top-3 left-3.5 pointer-events-none text-gray-400">
-                        <MapPin className="w-4 h-4" />
-                      </div>
-                      <textarea
-                        required
-                        rows={3}
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="House no., Road no., Area, Thana & District..."
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition resize-none"
-                      />
                     </div>
                   </div>
 
                   {/* Customer Note */}
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
-                      Special Delivery Instructions (Optional)
+                      অর্ডার নোট (ঐচ্ছিক)
                     </label>
                     <div className="relative">
                       <div className="absolute top-3 left-3.5 pointer-events-none text-gray-400">
@@ -366,7 +366,7 @@ export default function CheckoutPage() {
                         type="text"
                         value={customerNote}
                         onChange={(e) => setCustomerNote(e.target.value)}
-                        placeholder="e.g. Please deliver after 5 PM or call before arriving..."
+                        placeholder="যেমন: ডেলিভারির বিশেষ সময় বা মন্তব্য লিখুন..."
                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition"
                       />
                     </div>
@@ -491,10 +491,10 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-gray-600">
-                    <span>Shipping Fee:</span>
+                    <span>ডেলিভারি চার্জ:</span>
                     <span className="font-bold text-gray-900">
                       {isFreeDelivery ? (
-                        <span className="text-brand-green font-black">৳0 (Free Delivery)</span>
+                        <span className="text-brand-green font-black">ফ্রি</span>
                       ) : (
                         `৳${shippingFee}`
                       )}

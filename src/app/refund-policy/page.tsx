@@ -4,8 +4,11 @@ import { ChevronRight, RotateCcw, ShieldCheck, CheckCircle2, Phone, MessageCircl
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Return & Refund Policy | Sader Vubon",
-  description: "Learn about Sader Vubon's customer-first 7-day return, replacement, and instant refund policy.",
+  title: `রিটার্ন ও রিফান্ড পলিসি | ${siteConfig.name}`,
+  description: `স্বাদের ভুবনের ৭ দিনের সহজ রিটার্ন ও রিফান্ড পলিসি। পণ্যে কোনো ত্রুটি থাকলে সাথে সাথে রিটার্ন বা পরিবর্তন করার সুবিধা।`,
+  alternates: {
+    canonical: `${siteConfig.url}/refund-policy`,
+  },
 };
 
 export default function RefundPolicyPage() {

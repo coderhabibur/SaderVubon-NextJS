@@ -61,6 +61,7 @@ export interface ProductQueryParams {
   order?: "asc" | "desc";
   featured?: boolean;
   on_sale?: boolean;
+  revalidate?: number;
 }
 
 export interface AttributeTerm {
@@ -106,10 +107,12 @@ export async function getFilteredProductsWithPagination(
     if (params.featured) query.set("featured", "true");
     if (params.on_sale) query.set("on_sale", "true");
 
-    const res = await fetch(`${WORDPRESS_URL}/wp-json/wc/v3/products?${query.toString()}`, {
-      headers: getAuthHeader(),
-      next: { revalidate: 300 },
-    });
+    const revalidateTime = typeof params.revalidate === "number" ? params.revalidate : 0;
+    const fetchOptions: RequestInit = revalidateTime === 0 
+      ? { headers: getAuthHeader(), cache: "no-store" } 
+      : { headers: getAuthHeader(), next: { revalidate: revalidateTime } };
+
+    const res = await fetch(`${WORDPRESS_URL}/wp-json/wc/v3/products?${query.toString()}`, fetchOptions);
 
     if (!res.ok) {
       return { products: [], total: 0, totalPages: 1, currentPage };
@@ -148,10 +151,12 @@ export async function getFilteredProducts(params: ProductQueryParams = {}): Prom
     if (params.featured) query.set("featured", "true");
     if (params.on_sale) query.set("on_sale", "true");
 
-    const res = await fetch(`${WORDPRESS_URL}/wp-json/wc/v3/products?${query.toString()}`, {
-      headers: getAuthHeader(),
-      next: { revalidate: 300 },
-    });
+    const revalidateTime = typeof params.revalidate === "number" ? params.revalidate : 0;
+    const fetchOptions: RequestInit = revalidateTime === 0 
+      ? { headers: getAuthHeader(), cache: "no-store" } 
+      : { headers: getAuthHeader(), next: { revalidate: revalidateTime } };
+
+    const res = await fetch(`${WORDPRESS_URL}/wp-json/wc/v3/products?${query.toString()}`, fetchOptions);
 
     if (!res.ok) return [];
     return await res.json();
@@ -176,6 +181,33 @@ export async function getCategoryBySlug(slug: string): Promise<{ id: number; nam
   } catch (error) {
     console.error(`Error fetching category ${slug}:`, error);
     return null;
+  }
+}
+
+export interface ACFHomepageSection {
+  section_top_title?: string;
+  section_title: string;
+  section_subtitle?: string;
+  select_category?: {
+    term_id: number;
+    name: string;
+    slug: string;
+    count: number;
+  } | number;
+  products_limit?: string | number;
+}
+
+export async function getHomepageSections(): Promise<ACFHomepageSection[]> {
+  try {
+    const res = await fetch(`${WORDPRESS_URL}/wp-json/custom/v1/homepage-sections`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error fetching ACF homepage sections:", error);
+    return [];
   }
 }
 

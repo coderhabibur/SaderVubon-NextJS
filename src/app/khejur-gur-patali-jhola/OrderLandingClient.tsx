@@ -22,12 +22,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ShoppingBag,
-  Award,
-  HeartHandshake,
   AlertCircle,
   HelpCircle,
   MapPin,
   User,
+  FileText,
   Package,
   Layers,
   Flame,
@@ -231,7 +230,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
   });
 
   // Hero interactive tab state
-  const [activeHeroTab, setActiveHeroTab] = useState<"artisan" | "combo" | "patali" | "jhola">("artisan");
+  const [activeHeroTab] = useState<"artisan" | "combo" | "patali" | "jhola">("artisan");
 
   // Form Fields
   const [name, setName] = useState("");
@@ -269,6 +268,62 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
     return () => window.removeEventListener("resize", checkPricingScroll);
   }, [products]);
 
+  // Typewriter Animation for "নিরাপদ খেজুরের গুড়" (text লেখার মতো টাইপিং অ্যানিমেশন)
+  const TYPEWRITER_PHRASES = ["নিরাপদ খেজুরের গুড়"];
+  const [typewriterText, setTypewriterText] = useState("নিরাপদ খেজুরের গুড়");
+  const [isDeletingTypewriter, setIsDeletingTypewriter] = useState(false);
+  const [typewriterIndex, setTypewriterIndex] = useState(0);
+
+  // Start typing from empty after client mounts
+  useEffect(() => {
+    setTypewriterText("");
+  }, []);
+
+  useEffect(() => {
+    const currentPhrase = TYPEWRITER_PHRASES[typewriterIndex % TYPEWRITER_PHRASES.length];
+    const segmenter = typeof Intl !== "undefined" && (Intl as any).Segmenter
+      ? new (Intl as any).Segmenter("bn", { granularity: "grapheme" })
+      : null;
+    const graphemes: string[] = segmenter
+      ? Array.from(segmenter.segment(currentPhrase)).map((s: any) => s.segment)
+      : Array.from(currentPhrase);
+
+    let timer: NodeJS.Timeout;
+
+    if (!isDeletingTypewriter) {
+      const currentGraphemes: string[] = segmenter
+        ? Array.from(segmenter.segment(typewriterText)).map((s: any) => s.segment)
+        : Array.from(typewriterText);
+
+      if (currentGraphemes.length < graphemes.length) {
+        timer = setTimeout(() => {
+          setTypewriterText(graphemes.slice(0, currentGraphemes.length + 1).join(""));
+        }, 140);
+      } else {
+        timer = setTimeout(() => {
+          setIsDeletingTypewriter(true);
+        }, 3200);
+      }
+    } else {
+      const currentGraphemes: string[] = segmenter
+        ? Array.from(segmenter.segment(typewriterText)).map((s: any) => s.segment)
+        : Array.from(typewriterText);
+
+      if (currentGraphemes.length > 0) {
+        timer = setTimeout(() => {
+          setTypewriterText(graphemes.slice(0, currentGraphemes.length - 1).join(""));
+        }, 65);
+      } else {
+        timer = setTimeout(() => {
+          setIsDeletingTypewriter(false);
+          setTypewriterIndex((prev) => (prev + 1) % TYPEWRITER_PHRASES.length);
+        }, 400);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [typewriterText, isDeletingTypewriter, typewriterIndex]);
+
   const scrollPricing = (direction: "left" | "right") => {
     if (pricingSliderRef.current) {
       const scrollStep = pricingSliderRef.current.clientWidth >= 1024
@@ -276,6 +331,27 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
         : pricingSliderRef.current.clientWidth * 0.8;
       pricingSliderRef.current.scrollBy({
         left: direction === "left" ? -scrollStep : scrollStep,
+        behavior: "smooth",
+      });
+      setTimeout(checkPricingScroll, 350);
+    }
+  };
+
+  const scrollToPricingIndex = (index: number) => {
+    if (pricingSliderRef.current) {
+      const cards = pricingSliderRef.current.children;
+      if (cards && cards[index]) {
+        (cards[index] as HTMLElement).scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
+        setTimeout(checkPricingScroll, 350);
+        return;
+      }
+      const step = pricingSliderRef.current.clientWidth >= 640 ? 304 : 276;
+      pricingSliderRef.current.scrollTo({
+        left: index * step,
         behavior: "smooth",
       });
       setTimeout(checkPricingScroll, 350);
@@ -399,7 +475,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
   const hasFreeDeliveryItem = selectedProductList.some(
     (item) => item.product.badge === "ফ্রি ডেলিভারি"
   );
-  const isFreeShipping = hasFreeDeliveryItem;
+  const isFreeShipping = hasFreeDeliveryItem || subtotal >= 2500;
   const shippingFee = isFreeShipping ? 0 : deliveryZone === "inside_dhaka" ? 70 : 130;
   const grandTotal = subtotal + shippingFee;
 
@@ -509,8 +585,8 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                 <span className="text-xl sm:text-2xl font-black text-gray-950 block leading-tight font-heading group-hover:text-[#8B3A14] transition-colors">
                   {siteConfig.name}
                 </span>
-                <span className="text-[10px] font-bold text-[#8B3A14] block tracking-widest uppercase">
-                  ১০০% খাঁটি পণ্য
+                <span className="text-[7.5px] sm:text-[9px] font-bold text-[#8B3A14] block tracking-wider uppercase mt-0.5">
+                  best in taste & purity
                 </span>
               </div>
             </Link>
@@ -518,7 +594,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
             {/* Middle Badge (Desktop) */}
             <div className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E8] border border-[#E5D4C4] text-[#522110] text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5 text-[#B45309]" />
-              <span>ঐতিহ্যবাহী রাজশাহীর চারঘাট ও বাঘার খাঁটি গুড়</span>
+              <span>ঐতিহ্যবাহী রাজশাহীর খাঁটি গুড়</span>
             </div>
 
             <a
@@ -539,246 +615,201 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
             </a>
           </div>
 
-          {/* Hero Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Column: Sales Copy & High Conversion CTA */}
-            <div className="lg:col-span-6 xl:col-span-6 text-center lg:text-left">
-              {/* Trust & Social Proof Pill */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#FAF1E6] border border-[#E5D0BC] text-[#4A1D0B] text-[11px] sm:text-xs md:text-sm font-bold mb-4 sm:mb-5 shadow-2xs whitespace-nowrap">
-                <div className="flex items-center text-[#D97706] shrink-0">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-current text-[#D97706]" />
-                  ))}
-                </div>
-                <span className="font-bold">৪.৯/৫ রেটিং (৫,০০০+ পরিবারের বিশ্বস্ত পছন্দ)</span>
+          {/* Centered Luxury Hero Presentation Flow */}
+          <div className="max-w-4xl xl:max-w-5xl mx-auto flex flex-col items-center text-center">
+            {/* 1. Social Proof & Star Rating */}
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#FAF1E6] border border-[#E5D0BC] text-[#4A1D0B] text-xs sm:text-sm font-bold mb-4 shadow-2xs whitespace-nowrap">
+              <div className="flex items-center text-[#D97706] shrink-0">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-3 sm:w-3.5 h-3 sm:h-3.5 fill-current text-[#D97706]" />
+                ))}
               </div>
+              <span className="font-bold">৪.৯/৫ রেটিং (৫,০০০+ পরিবারের বিশ্বস্ত পছন্দ)</span>
+            </div>
 
-              {/* Main Headline */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[46px] xl:text-[48px] font-black text-gray-950 leading-[1.32] sm:leading-[1.28] tracking-tight mb-5 font-heading">
-                দক্ষ গাছিদের হাতে তৈরি{" "}
-                <span className="relative inline-block whitespace-nowrap">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6E2E16] via-[#943813] to-[#B45309]">
-                    নিরাপদ খেজুরের গুড়
-                  </span>
-                  <span className="absolute -bottom-1 left-0 right-0 h-1.5 bg-gradient-to-r from-[#943813] via-[#C25E18] to-[#943813] rounded-full opacity-85" />
-                </span>
-                <span className="block text-xl sm:text-2xl md:text-3xl font-extrabold text-[#3B170B] mt-2 font-sans">
-                  — শতভাগ নির্ভেজাল ও আসল ঘ্রাণ
+            {/* 2. High-Impact Headline Banner (Our New Luxury Molasses Style) */}
+            <div className="w-full max-w-3xl mx-auto bg-gradient-to-r from-[#7A2E12] via-[#943916] to-[#7A2E12] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:px-8 border-2 border-[#C25E18]/80 shadow-xl shadow-[#7A2E12]/20 mb-5 sm:mb-6">
+              <h1 className="text-lg sm:text-2xl md:text-[26px] font-black text-white leading-relaxed sm:leading-snug font-heading tracking-tight">
+                আমাদের গ্রামের দক্ষ গাছি দ্বারা আমরা নিরাপদ খেজুর রস থেকে খেজুরের গুড় উৎপাদন করে থাকি।{" "}
+                <span className="text-[#FFD88D] inline-block font-black underline decoration-amber-400/60 decoration-2 underline-offset-4">
+                  তাই নিশ্চিন্তে অর্ডার করুন
                 </span>
               </h1>
-
-              {/* Persuasive Story Copy */}
-              <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed mb-7 max-w-xl mx-auto lg:mx-0 font-normal">
-                কোনো প্রকার চিনি, ক্ষতিকর হাইড্রোজ বা কৃত্রিম ফ্লেভার ছাড়াই মাটির চুলায় কাঠের আঁচে জ্বাল দিয়ে তৈরি খাঁটি পাটালি, ঝোলা ও দানাদার গুড়। শীতের প্রতিটি পিঠা-পায়েসে ফিরিয়ে আনুন সেই আদি ও আসল স্বাদ।
-              </p>
-
-              {/* 4 Feature Badges (Modern Light Cards) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 text-left max-w-lg mx-auto lg:mx-0">
-                <div className="flex items-center gap-3 bg-white hover:bg-[#FAF4EC] border border-[#E5D4C4] hover:border-[#C4A78E] rounded-2xl p-3 sm:p-3.5 transition-all duration-300 shadow-xs group">
-                  <div className="w-8 h-8 rounded-xl bg-[#F6EDE2] text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] group-hover:scale-110 transition-transform">
-                    <CheckCircle2 className="w-4 h-4 text-[#8B3A14] stroke-[2.5]" />
-                  </div>
-                  <span className="text-xs sm:text-sm text-[#28140B] font-bold">১০০% চিনি ও কেমিক্যালমুক্ত</span>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white hover:bg-[#FAF4EC] border border-[#E5D4C4] hover:border-[#C4A78E] rounded-2xl p-3 sm:p-3.5 transition-all duration-300 shadow-xs group">
-                  <div className="w-8 h-8 rounded-xl bg-[#F6EDE2] text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] group-hover:scale-110 transition-transform">
-                    <Flame className="w-4 h-4 text-[#8B3A14] stroke-[2.5]" />
-                  </div>
-                  <span className="text-xs sm:text-sm text-[#28140B] font-bold">মাটির চুলায় কাঠের আঁচে জ্বাল</span>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white hover:bg-[#FAF4EC] border border-[#E5D4C4] hover:border-[#C4A78E] rounded-2xl p-3 sm:p-3.5 transition-all duration-300 shadow-xs group">
-                  <div className="w-8 h-8 rounded-xl bg-[#F6EDE2] text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] group-hover:scale-110 transition-transform">
-                    <Package className="w-4 h-4 text-[#8B3A14] stroke-[2.5]" />
-                  </div>
-                  <span className="text-xs sm:text-sm text-[#28140B] font-bold">ফুড-গ্রেড এয়ারটাইট সিলড পাত্র</span>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white hover:bg-[#FAF4EC] border border-[#E5D4C4] hover:border-[#C4A78E] rounded-2xl p-3 sm:p-3.5 transition-all duration-300 shadow-xs group">
-                  <div className="w-8 h-8 rounded-xl bg-[#F6EDE2] text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] group-hover:scale-110 transition-transform">
-                    <ShieldCheck className="w-4 h-4 text-[#8B3A14] stroke-[2.5]" />
-                  </div>
-                  <span className="text-xs sm:text-sm text-[#28140B] font-bold">দেখে চেক করে টাকা দিন (COD)</span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                <button
-                  type="button"
-                  onClick={() => scrollToOrderForm()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8B3A14] via-[#A8471B] to-[#8B3A14] hover:from-[#722E11] hover:to-[#722E11] text-white font-black text-base sm:text-lg px-8 py-4 rounded-2xl shadow-xl shadow-[#8B3A14]/30 hover:shadow-[#8B3A14]/40 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 cursor-pointer border border-[#C25E18]"
-                >
-                  <ShoppingBag className="w-5 h-5 text-white stroke-[2.2]" />
-                  <span>প্যাকেজ দেখুন ও অর্ডার করুন</span>
-                  <ArrowRight className="w-5 h-5 stroke-[2.5]" />
-                </button>
-
-                <a
-                  href={`https://wa.me/88${siteConfig.contact.whatsapp}?text=${encodeURIComponent(
-                    "আসসালামু আলাইকুম, আমি খাঁটি খেজুরের গুড় অর্ডার করতে চাই।"
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 text-white font-black text-base sm:text-lg px-7 py-4 rounded-2xl bg-gradient-to-r from-[#25D366] via-[#20be5b] to-[#128C7E] hover:from-[#20bd5a] hover:to-[#0e7569] border-2 border-white/30 shadow-xl shadow-[#25D366]/35 hover:shadow-[#25D366]/50 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 cursor-pointer"
-                >
-                  <svg className="w-5 h-5 fill-white shrink-0 drop-shadow-xs" viewBox="0 0 24 24">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-                  </svg>
-                  <span>হোয়াটসঅ্যাপে অর্ডার করুন</span>
-                </a>
-              </div>
-
-              {/* Reassurance Subtext */}
-              <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1.5 text-xs text-[#523B30] font-medium">
-                <span className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#8B3A14]" /> সারা দেশে ক্যাশ অন ডেলিভারি
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#8B3A14]" /> অগ্রিম ১ টাকাও দিতে হবে না
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#8B3A14]" /> নষ্ট হলে ফ্রি রিপ্লেসমেন্ট
-                </span>
+              <div className="mt-2.5 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/25 border border-white/15 text-xs sm:text-sm text-amber-200 font-bold">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                <span>শতভাগ খাঁটি ও নির্ভেজাল {typewriterText || "খেজুরের গুড়"}</span>
               </div>
             </div>
 
-            {/* Right Column: Interactive Light Showcase Centerpiece */}
-            <div className="lg:col-span-6 xl:col-span-6 flex flex-col items-center lg:items-end">
-              <div className="relative max-w-md sm:max-w-lg lg:max-w-[500px] xl:max-w-[540px] w-full">
-                {/* Subtle Ambient Backlight */}
-                <div className="absolute -inset-4 bg-gradient-to-tr from-[#8B3A14]/15 via-[#B45309]/15 to-[#5C240D]/10 rounded-[2.5rem] blur-2xl pointer-events-none" />
+            {/* 3. Action CTA Button with Glace Animation */}
+            <div className="mb-8 sm:mb-10 w-full flex justify-center">
+              <button
+                type="button"
+                onClick={() => scrollToOrderForm()}
+                className="animate-btn-pulse relative overflow-hidden group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8B3A14] via-[#A8471B] to-[#8B3A14] hover:from-[#722E11] hover:to-[#722E11] text-white font-black text-base sm:text-xl px-10 py-4 sm:py-4.5 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_14px_28px_-6px_rgba(139,58,20,0.45)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_18px_34px_-6px_rgba(139,58,20,0.55)] transition-all duration-300 cursor-pointer border-2 border-[#C25E18]"
+              >
+                {/* Glace Shine Light Beam */}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 pointer-events-none w-full h-full overflow-hidden rounded-2xl"
+                >
+                  <span className="absolute top-0 -left-[150%] w-[120%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-[25deg] animate-glace" />
+                </span>
 
-                {/* Luxury Light Frame */}
-                <div className="relative rounded-[2rem] sm:rounded-[2.5rem] p-3 sm:p-4 bg-white border-2 border-[#E5D4C4] shadow-2xl shadow-[#3B170B]/10">
-                  {/* Floating Top Badges */}
-                  <div className="absolute top-6 left-6 z-20">
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-[#DEC7B2] text-[#522110] text-xs font-bold shadow-md">
-                      <Sparkles className="w-3.5 h-3.5 text-[#8B3A14]" />
-                      {HERO_SHOWCASES[activeHeroTab].badge}
+                <ShoppingBag className="w-5 sm:w-6 h-5 sm:h-6 text-white stroke-[2.2] group-hover:scale-110 transition-transform duration-200 relative z-10" />
+                <span className="relative z-10">অর্ডার করতে চাই</span>
+                <ArrowRight className="w-5 sm:w-6 h-5 sm:h-6 stroke-[2.5] group-hover:translate-x-1.5 transition-transform duration-200 relative z-10" />
+              </button>
+            </div>
+
+            {/* 4. Centerpiece Showcase Frame: Authentic Farmer & Gur Photo */}
+            <div className="relative max-w-xl sm:max-w-2xl lg:max-w-3xl w-full mx-auto">
+              {/* Multi-layered Ambient Animated Glow Behind Frame */}
+              <div
+                className="absolute -inset-4 bg-gradient-to-tr from-[#8B3A14]/25 via-amber-400/20 to-emerald-600/15 rounded-[2.5rem] blur-2xl pointer-events-none animate-pulse"
+                style={{ animationDuration: "4s" }}
+              />
+
+              {/* Top Center Floating Sparkle Orb */}
+              <div
+                className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 w-8 h-8 rounded-full bg-white shadow-md border border-amber-200 flex items-center justify-center animate-bounce"
+                style={{ animationDuration: "3.5s" }}
+              >
+                <Sparkles className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: "8s" }} />
+              </div>
+
+              {/* Luxury Light Frame */}
+              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] p-3 sm:p-4.5 bg-white border-2 border-[#E5D4C4] shadow-2xl shadow-[#3B170B]/10">
+                {/* Floating Top Badges (Mobile-friendly: Diagonal placement on mobile to prevent overlap, corner-to-corner on desktop) */}
+                <div className="absolute top-4 sm:top-6 left-4 sm:left-6 z-20 animate-float-slow">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-white/95 border border-amber-200/90 text-[#6B280F] text-[11px] sm:text-xs font-black shadow-lg backdrop-blur-md">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                    🌾 ১০০% প্রাকৃতিক ও নির্ভেজাল
+                  </span>
+                </div>
+
+                <div className="absolute bottom-4 right-4 sm:bottom-auto sm:top-6 sm:right-6 z-20 animate-float-reverse">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#8B3A14] to-[#C25E18] text-white text-[11px] sm:text-xs font-black shadow-lg border border-amber-300/40">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
                     </span>
+                    🔥 আজকের তাজা স্টক
+                  </span>
+                </div>
+
+                {/* Main Showcase Image Container */}
+                <div className="relative aspect-[16/10] sm:aspect-[16/10] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#F8EFE4] border border-[#DEC7B2] group">
+                  <Image
+                    src="/images/hero-gur-farmer.jpg"
+                    alt="আমাদের গ্রামের গাছি ও খাঁটি খেজুরের গুড়"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 800px"
+                    className="object-cover object-center transition-all duration-700 group-hover:scale-105"
+                    priority
+                    unoptimized
+                  />
+                  {/* Subtle aesthetic gradient overlay at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent pointer-events-none" />
+                </div>
+
+                {/* Floating Shape 1: 5-Star Premium Quality Card (Bottom Left) */}
+                <div className="hidden sm:flex absolute -bottom-4 -left-3 sm:-bottom-5 sm:-left-5 z-30 p-2.5 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-amber-200/90 shadow-[0_14px_35px_rgba(139,58,20,0.18)] items-center gap-2.5 sm:gap-3 hover:scale-105 transition-all duration-300 cursor-default animate-float-slow">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-[#8B3A14] to-[#C25E18] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#8B3A14]/30">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 animate-pulse" />
                   </div>
-
-                  <div className="absolute top-6 right-6 z-20">
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#8B3A14] to-[#A8471B] text-white text-xs font-black shadow-md">
-                      <Flame className="w-3.5 h-3.5 text-white" />
-                      তাজা স্টক
-                    </span>
-                  </div>
-
-                  {/* Main Showcase Image Container */}
-                  <div className="relative aspect-[4/3] sm:aspect-[1/1] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#F8EFE4] border border-[#DEC7B2]">
-                    <Image
-                      key={HERO_SHOWCASES[activeHeroTab].image}
-                      src={HERO_SHOWCASES[activeHeroTab].image}
-                      alt={HERO_SHOWCASES[activeHeroTab].title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 550px"
-                      className="object-cover object-center transition-all duration-700 hover:scale-105"
-                      priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-
-                    {/* Bottom Floating Caption on Image */}
-                    <div className="absolute bottom-3 left-3 right-3 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-[#E5D4C4] text-gray-950 shadow-lg">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <h3 className="text-sm sm:text-base font-black text-gray-950 truncate font-heading">
-                            {HERO_SHOWCASES[activeHeroTab].title}
-                          </h3>
-                          <p className="text-xs text-gray-600 truncate mt-0.5">
-                            {HERO_SHOWCASES[activeHeroTab].subtitle}
-                          </p>
-                        </div>
-                        {HERO_SHOWCASES[activeHeroTab].productId && (
-                          <button
-                            type="button"
-                            onClick={() => scrollToOrderForm(HERO_SHOWCASES[activeHeroTab].productId!)}
-                            className="shrink-0 bg-[#8B3A14] hover:bg-[#722E11] text-white font-black text-xs px-3.5 py-1.5 rounded-xl shadow-xs transition-colors"
-                          >
-                            অর্ডার করুন
-                          </button>
-                        )}
-                      </div>
+                  <div className="text-left">
+                    <div className="flex items-center gap-1 text-amber-500 text-xs mb-0.5">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <span className="text-[10px] sm:text-[11px] font-black text-gray-800 ml-1">৫.০</span>
                     </div>
+                    <p className="text-xs sm:text-sm font-black text-gray-950 font-heading leading-tight">
+                      শতভাগ খাঁটি খেজুরের গুড়
+                    </p>
+                    <p className="text-[10px] text-emerald-700 font-bold">
+                      ✓ প্রিমিয়াম কোয়ালিটি নিশ্চয়তা
+                    </p>
                   </div>
+                </div>
 
-                  {/* 4 Interactive Selector Tabs */}
-                  <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mt-3 pt-1">
-                    {(Object.keys(HERO_SHOWCASES) as Array<keyof typeof HERO_SHOWCASES>).map((key) => {
-                      const item = HERO_SHOWCASES[key];
-                      const isActive = activeHeroTab === key;
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => setActiveHeroTab(key)}
-                          className={`py-2 px-1 text-center rounded-xl text-[11px] sm:text-xs font-bold transition-all duration-200 cursor-pointer ${
-                            isActive
-                              ? "bg-gradient-to-r from-[#8B3A14] to-[#A8471B] text-white font-black shadow-md border border-[#8B3A14] scale-[1.02]"
-                              : "bg-[#FAF2E8] hover:bg-[#F3E5D5] text-[#4A1D0B] border border-[#E2CEB9]"
-                          }`}
-                        >
-                          <span className="truncate block">{item.tabLabel}</span>
-                        </button>
-                      );
-                    })}
+                {/* Floating Shape 2: Verified COD Purity Seal (Bottom Right) */}
+                <div className="hidden sm:flex absolute -bottom-4 -right-3 sm:-bottom-5 sm:-right-5 z-30 p-2 sm:p-2.5 rounded-2xl bg-gradient-to-tr from-[#063b23] to-[#0d6437] text-white shadow-[0_14px_30px_rgba(6,59,35,0.25)] border-2 border-emerald-400/40 items-center gap-2 hover:scale-105 transition-all duration-300 cursor-default animate-float-reverse">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center text-amber-300 shrink-0">
+                    <ShieldCheck className="w-4 h-4 text-emerald-300 stroke-[2.5]" />
+                  </div>
+                  <div className="text-left pr-1">
+                    <span className="text-[9px] font-bold text-emerald-200 block uppercase tracking-wider leading-none">
+                      ক্যাশ অন ডেলিভারি
+                    </span>
+                    <span className="text-xs font-black text-white block mt-0.5 leading-tight">
+                      টেস্ট করে টাকা দিন
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Reassurance Text Under Image (Clean & unboxed like reference image) */}
+            <p className="mt-7 sm:mt-9 text-sm sm:text-base md:text-lg font-bold text-[#4A1D0B] flex items-center justify-center gap-2 text-center px-4">
+              <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
+              <span>কোনো অগ্রিম পেমেন্ট ছাড়াই অর্ডার করুন! ডেলিভারি ম্যানের সামনে দেখে ও টেস্ট করে টাকা পরিশোধ করুন</span>
+            </p>
           </div>
         </div>
       </section>
 
       {/* 3. FOUR ELEVATED TRUST PILLARS RIBBON */}
-      <section className="relative z-20 -mt-8 sm:-mt-10 max-w-6xl mx-auto px-4">
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 lg:p-6 shadow-[0_20px_50px_rgba(59,23,11,0.06)] border border-[#E5D4C4]">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5">
+      <section className="relative z-20 -mt-8 sm:-mt-10 max-w-7xl mx-auto px-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 lg:p-5 shadow-[0_20px_50px_rgba(59,23,11,0.06)] border border-[#E5D4C4]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 lg:gap-4">
             {/* 1. Pure Product */}
-            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 flex items-center gap-2.5 sm:gap-3.5 transition-all">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#8B3A14]/10 text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] shadow-2xs">
-                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 lg:p-3.5 flex items-center gap-2.5 sm:gap-3 transition-all">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl bg-[#8B3A14]/10 text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] shadow-2xs">
+                <ShieldCheck className="w-5 h-5 sm:w-5.5 sm:h-5.5 lg:w-6 lg:h-6 stroke-[2.2]" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight">১০০% খাঁটি পণ্য</h4>
-                <p className="text-[10.5px] sm:text-xs text-gray-600 mt-0.5 leading-snug line-clamp-2">কোনো ক্ষতিকর কেমিক্যাল নেই</p>
+                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight whitespace-nowrap">১০০% খাঁটি পণ্য</h4>
+                <p className="text-[10px] sm:text-[11px] lg:text-xs text-gray-600 mt-0.5 leading-snug md:whitespace-nowrap">কোনো ক্ষতিকর কেমিক্যাল নেই</p>
               </div>
             </div>
 
             {/* 2. Cash on Delivery */}
-            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 flex items-center gap-2.5 sm:gap-3.5 transition-all">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-300/60 shadow-2xs">
-                <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 lg:p-3.5 flex items-center gap-2.5 sm:gap-3 transition-all">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-300/60 shadow-2xs">
+                <CheckCircle2 className="w-5 h-5 sm:w-5.5 sm:h-5.5 lg:w-6 lg:h-6 stroke-[2.2]" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight">ক্যাশ অন ডেলিভারি</h4>
-                <p className="text-[10.5px] sm:text-xs text-gray-600 mt-0.5 leading-snug line-clamp-2">পণ্য দেখে টাকা পরিশোধ</p>
+                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight whitespace-nowrap">ক্যাশ অন ডেলিভারি</h4>
+                <p className="text-[10px] sm:text-[11px] lg:text-xs text-gray-600 mt-0.5 leading-snug md:whitespace-nowrap">পণ্য দেখে টাকা পরিশোধ</p>
               </div>
             </div>
 
             {/* 3. Fast Delivery */}
-            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 flex items-center gap-2.5 sm:gap-3.5 transition-all">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#8B3A14]/10 text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] shadow-2xs">
-                <Truck className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 lg:p-3.5 flex items-center gap-2.5 sm:gap-3 transition-all">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl bg-[#8B3A14]/10 text-[#8B3A14] flex items-center justify-center shrink-0 border border-[#DEC7B2] shadow-2xs">
+                <Truck className="w-5 h-5 sm:w-5.5 sm:h-5.5 lg:w-6 lg:h-6 stroke-[2.2]" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight">দ্রুত ডেলিভারি</h4>
-                <p className="text-[10.5px] sm:text-xs text-gray-600 mt-0.5 leading-snug line-clamp-2">সারা দেশে হোম ডেলিভারি</p>
+                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight whitespace-nowrap">দ্রুত ডেলিভারি</h4>
+                <p className="text-[10px] sm:text-[11px] lg:text-xs text-gray-600 mt-0.5 leading-snug md:whitespace-nowrap">সারা দেশে হোম ডেলিভারি</p>
               </div>
             </div>
 
             {/* 4. Easy Return */}
-            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 flex items-center gap-2.5 sm:gap-3.5 transition-all">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-300/60 shadow-2xs">
-                <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+            <div className="bg-[#FAF7F2] hover:bg-[#F6EDE2] border border-[#E5D4C4] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 lg:p-3.5 flex items-center gap-2.5 sm:gap-3 transition-all">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-300/60 shadow-2xs">
+                <RotateCcw className="w-5 h-5 sm:w-5.5 sm:h-5.5 lg:w-6 lg:h-6 stroke-[2.2]" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight">সহজ রিটার্ন</h4>
-                <p className="text-[10.5px] sm:text-xs text-gray-600 mt-0.5 leading-snug line-clamp-2">সমস্যা হলে দ্রুত রিপ্লেসমেন্ট</p>
+                <h4 className="text-xs sm:text-sm md:text-base font-black text-gray-950 leading-tight whitespace-nowrap">সহজ রিটার্ন</h4>
+                <p className="text-[10px] sm:text-[11px] lg:text-xs text-gray-600 mt-0.5 leading-snug md:whitespace-nowrap">সমস্যা হলে দ্রুত রিপ্লেসমেন্ট</p>
               </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -802,34 +833,34 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
 
           {/* Slider Outer Container */}
           <div className="relative group/slider">
-            {/* Left Floating Arrow Button (Desktop) */}
+            {/* Left Floating Arrow Button */}
             <button
               type="button"
               onClick={() => scrollPricing("left")}
               disabled={!canScrollPricingLeft}
               aria-label="পূর্ববর্তী পণ্যসমূহ"
-              className={`hidden md:flex absolute -left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 text-emerald-950 shadow-xl border border-amber-300/80 items-center justify-center transition-all duration-300 ${
+              className={`flex absolute left-0 sm:-left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 text-emerald-950 shadow-xl border border-amber-300/80 items-center justify-center transition-all duration-300 ${
                 canScrollPricingLeft
-                  ? "hover:bg-brand-green hover:text-white hover:scale-110 cursor-pointer"
-                  : "opacity-30 pointer-events-none cursor-default"
+                  ? "opacity-100 hover:bg-brand-green hover:text-white hover:scale-110 cursor-pointer"
+                  : "opacity-0 sm:opacity-30 pointer-events-none cursor-default"
               }`}
             >
-              <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
             </button>
 
-            {/* Right Floating Arrow Button (Desktop) */}
+            {/* Right Floating Arrow Button */}
             <button
               type="button"
               onClick={() => scrollPricing("right")}
               disabled={!canScrollPricingRight}
               aria-label="পরবর্তী পণ্যসমূহ"
-              className={`hidden md:flex absolute -right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 text-emerald-950 shadow-xl border border-amber-300/80 items-center justify-center transition-all duration-300 ${
+              className={`flex absolute right-0 sm:-right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 text-emerald-950 shadow-xl border border-amber-300/80 items-center justify-center transition-all duration-300 ${
                 canScrollPricingRight
-                  ? "hover:bg-brand-green hover:text-white hover:scale-110 cursor-pointer"
-                  : "opacity-30 pointer-events-none cursor-default"
+                  ? "opacity-100 hover:bg-brand-green hover:text-white hover:scale-110 cursor-pointer shadow-amber-500/20"
+                  : "opacity-0 sm:opacity-30 pointer-events-none cursor-default"
               }`}
             >
-              <ChevronRight className="w-6 h-6 stroke-[2.5]" />
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
             </button>
 
             {/* Horizontal Scrollable Track */}
@@ -905,14 +936,14 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                           )}
                         </div>
 
-                        {/* Select & Scroll Button - Premium Elevated Design */}
+                        {/* Select & Scroll Button - Matching Order Button Color */}
                         <button
                           type="button"
                           onClick={() => scrollToOrderForm(p.id)}
-                          className={`w-full py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-300 cursor-pointer shadow-md whitespace-nowrap ${
+                          className={`w-full py-2.5 px-3 sm:px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-300 cursor-pointer shadow-md whitespace-nowrap ${
                             isSelected
                               ? "bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-gray-950 shadow-glow-gold hover:scale-[1.02] active:scale-98 border border-amber-300"
-                              : "bg-gradient-to-r from-[#063825] via-[#0a4d34] to-[#107c41] hover:from-[#0a4d34] hover:to-[#169450] text-white shadow-emerald-950/20 hover:shadow-lg hover:scale-[1.02] active:scale-98 border border-emerald-500/30"
+                              : "bg-gradient-to-r from-[#8B3A14] via-[#A8471B] to-[#8B3A14] hover:from-[#722E11] hover:to-[#722E11] text-white shadow-[#8B3A14]/25 hover:shadow-lg hover:shadow-[#8B3A14]/35 hover:scale-[1.02] active:scale-98 border border-[#C25E18]"
                           }`}
                         >
                           {isSelected ? (
@@ -922,7 +953,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                             </>
                           ) : (
                             <>
-                              <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300 shrink-0" />
+                              <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white stroke-[2.2] shrink-0" />
                               <span className="whitespace-nowrap">অর্ডার করুন</span>
                             </>
                           )}
@@ -932,6 +963,58 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                   </div>
                 );
               })}
+            </div>
+
+            {/* Mobile Swipe Hint + Pagination Controls */}
+            <div className="flex md:hidden items-center justify-between mt-4 px-2">
+              {/* Mobile Prev Button */}
+              <button
+                type="button"
+                onClick={() => scrollPricing("left")}
+                disabled={!canScrollPricingLeft}
+                aria-label="পূর্ববর্তী পণ্যসমূহ"
+                className={`p-2 rounded-xl border border-amber-200 bg-white shadow-xs text-gray-700 transition-colors flex items-center gap-1 text-xs font-bold ${
+                  canScrollPricingLeft
+                    ? "hover:bg-amber-50 active:bg-amber-100 text-gray-900"
+                    : "opacity-30 cursor-default"
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>আগেরটি</span>
+              </button>
+
+              {/* Pagination Dots */}
+              <div className="flex items-center gap-1.5">
+                {products.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => scrollToPricingIndex(idx)}
+                    aria-label={`পণ্য ${idx + 1}`}
+                    className={`transition-all duration-300 rounded-full ${
+                      pricingActiveIndex === idx
+                        ? "w-6 h-2 bg-gradient-to-r from-amber-500 to-brand-green"
+                        : "w-2 h-2 bg-amber-200 hover:bg-amber-300"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Mobile Next Button */}
+              <button
+                type="button"
+                onClick={() => scrollPricing("right")}
+                disabled={!canScrollPricingRight}
+                aria-label="পরবর্তী পণ্যসমূহ"
+                className={`p-2 rounded-xl border border-amber-200 bg-white shadow-xs text-gray-700 transition-colors flex items-center gap-1 text-xs font-bold ${
+                  canScrollPricingRight
+                    ? "hover:bg-amber-50 active:bg-amber-100 text-gray-900 bg-amber-50/50"
+                    : "opacity-30 cursor-default"
+                }`}
+              >
+                <span>পরেরটি</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
@@ -973,6 +1056,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                 <p className="text-xs text-gray-600 mt-0.5">ক্যাশ অন হোম ডেলিভারি</p>
               </div>
             </div>
+
           </div>
 
           {/* Review Slider Container */}
@@ -1088,86 +1172,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 6. FULL-WIDTH HIGH-CONVERTING WHATSAPP CTA BANNER */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-[#1ea952] via-[#25D366] to-[#128C7E] py-10 sm:py-14 text-white shadow-xl">
-        {/* Ambient lighting & subtle pattern */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#075E54]/20 rounded-full blur-3xl pointer-events-none" />
-        <div
-          className="absolute inset-0 opacity-[0.05] pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)`,
-            backgroundSize: "28px 28px",
-          }}
-        />
-
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 text-center lg:text-left">
-            {/* Left Column: Bold CTA Copy */}
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/25 backdrop-blur-md text-white text-xs sm:text-sm font-black mb-3 border border-white/35 shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                <span>সরাসরি গাছিদের চুলা থেকে সংগৃহীত খাঁটি গুড়</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-heading leading-tight tracking-tight drop-shadow-xs">
-                যেকোনো প্রশ্ন বা দ্রুত অর্ডারের জন্য কল বা হোয়াটসঅ্যাপ করুন
-              </h2>
-              <p className="text-xs sm:text-sm md:text-base text-white/95 mt-2 font-medium leading-relaxed drop-shadow-2xs">
-                পণ্য নিয়ে যেকোনো জিজ্ঞাসা বা সরাসরি ফোনে অর্ডার বুকিং করতে আমাদের হটলাইনে কথা বলুন। কোনো অগ্রিম টাকা লাগবে না, ডেলিভারি পেয়ে দেখে চেক করে মূল্য দিন।
-              </p>
-            </div>
-
-            {/* Right Column: Ultra-Premium CTA Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto shrink-0 justify-center">
-              {/* 1. WhatsApp Hero Button (Ultra Luxury White Glass Card) */}
-              <a
-                href={`https://wa.me/88${siteConfig.contact.whatsapp}?text=${encodeURIComponent(
-                  "আসসালামু আলাইকুম, আমি খাঁটি খেজুরের গুড় অর্ডার করতে চাই।"
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative inline-flex items-center justify-between sm:justify-start gap-3.5 bg-white hover:bg-[#F2FBF5] text-gray-950 px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl shadow-[0_14px_35px_rgba(0,0,0,0.18)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.26)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 border-2 border-white cursor-pointer"
-              >
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#20be5b] to-[#25D366] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#25D366]/40 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                    <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
-                    </svg>
-                  </div>
-                  <div className="text-left leading-tight">
-                    <span className="text-[10.5px] font-black text-[#128C7E] tracking-wider uppercase block">
-                      সরাসরি হোয়াটসঅ্যাপ
-                    </span>
-                    <span className="text-base sm:text-lg font-black text-gray-950 font-heading block">
-                      হোয়াটসঅ্যাপে অর্ডার করুন
-                    </span>
-                  </div>
-                </div>
-                <ArrowRight className="w-5 h-5 text-[#128C7E] group-hover:translate-x-1.5 transition-transform duration-300 stroke-[2.5] hidden sm:block shrink-0" />
-              </a>
-
-              {/* 2. Hotline Call Button (Ultra Sleek Obsidian Glass Card) */}
-              <a
-                href={`tel:${siteConfig.contact.phone}`}
-                className="group relative inline-flex items-center gap-3.5 bg-gray-950/85 hover:bg-black text-white px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl shadow-[0_14px_35px_rgba(0,0,0,0.22)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.32)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 border border-white/25 hover:border-white/40 backdrop-blur-md cursor-pointer"
-              >
-                <div className="w-11 h-11 rounded-xl bg-white/10 text-emerald-400 flex items-center justify-center shrink-0 border border-white/20 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 shadow-inner">
-                  <Phone className="w-5 h-5 text-emerald-400 stroke-[2.5]" />
-                </div>
-                <div className="text-left leading-tight">
-                  <span className="text-[10.5px] font-bold text-emerald-300/80 tracking-wider uppercase block">
-                    হটলাইন সরাসরি কল
-                  </span>
-                  <span className="text-base sm:text-lg font-black text-white font-mono tracking-tight block">
-                    {siteConfig.contact.phone}
-                  </span>
-                </div>
-              </a>
-            </div>
           </div>
         </div>
       </section>
@@ -1336,17 +1341,19 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                   {/* Full Name */}
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
-                      আপনার নাম লিখুন <span className="text-red-500">*</span>
+                      আপনার নাম <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <User className="w-4 h-4" />
+                      </div>
                       <input
                         type="text"
                         required
-                        placeholder="সম্পূর্ণ নাম লিখুন"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-green focus:ring-0 text-sm text-gray-900 transition-colors bg-white placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-400"
+                        placeholder="আপনার নাম লিখুন"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition bg-white"
                       />
                     </div>
                   </div>
@@ -1354,56 +1361,69 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                   {/* Phone Number */}
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
-                      মোবাইল নাম্বার লিখুন <span className="text-red-500">*</span>
+                      মোবাইল নাম্বার <span className="text-red-500">*</span>
+                      <span className="text-gray-400 font-normal text-xs ml-1">
+                        (ডেলিভারির যোগাযোগের জন্য)
+                      </span>
                     </label>
                     <div className="relative">
-                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <Phone className="w-4 h-4" />
+                      </div>
                       <input
                         type="tel"
                         required
-                        placeholder="১১ ডিজিটের সচল মোবাইল নম্বর (যেমন: 017XXXXXXXX)"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-green focus:ring-0 text-sm text-gray-900 transition-colors bg-white placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-400 placeholder:font-sans"
+                        placeholder="১১ ডিজিটের মোবাইল নম্বর লিখুন (যেমন: 017XXXXXXXX)"
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition bg-white"
                       />
                     </div>
-                    <p className="text-[11px] text-gray-500 mt-1">
-                      অর্ডার কনফার্মেশনের জন্য এই নাম্বারে কল করা হবে
-                    </p>
                   </div>
 
                   {/* Complete Delivery Address */}
                   <div>
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
-                      সম্পূর্ণ ডেলিভারি ঠিকানা লিখুন <span className="text-red-500">*</span>
+                      সম্পূর্ণ ডেলিভারি ঠিকানা <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-gray-400" />
+                      <div className="absolute top-3 left-3.5 pointer-events-none text-gray-400">
+                        <MapPin className="w-4 h-4" />
+                      </div>
                       <textarea
                         required
                         rows={3}
-                        placeholder="বাসা নং, রোড নং, এলাকা/গ্রাম, থানা ও জেলার নাম বিস্তারিত লিখুন"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-green focus:ring-0 text-sm text-gray-900 transition-colors bg-white resize-none placeholder:text-xs sm:placeholder:text-sm placeholder:text-gray-400"
+                        placeholder="বাসা নং, রোড নং, এলাকা/গ্রাম, থানা ও জেলার নাম বিস্তারিত লিখুন..."
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition bg-white resize-none"
                       />
                     </div>
                   </div>
 
                   {/* Shipping Zone Selector */}
-                  <div className="space-y-2 pt-2">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1">
+                  <div>
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2">
                       ডেলিভারি এরিয়া নির্বাচন করুন <span className="text-red-500">*</span>
                     </label>
+
+                    {isFreeShipping && (
+                      <div className="mb-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-xs text-brand-green font-bold">
+                        <Sparkles className="w-4 h-4 shrink-0 text-emerald-600" />
+                        <span>৳২৫০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি! 🎉</span>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Inside Dhaka */}
                       <label
-                        className={`flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
+                        className={`cursor-pointer rounded-xl border-2 p-3.5 flex items-center justify-between transition ${
                           deliveryZone === "inside_dhaka"
-                            ? "border-brand-green bg-emerald-50/50 shadow-xs"
+                            ? "border-brand-green bg-emerald-50/60 shadow-xs"
                             : "border-gray-200 bg-white hover:border-gray-300"
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-3">
                           <input
                             type="radio"
                             name="shippingZone"
@@ -1411,23 +1431,25 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                             onChange={() => setDeliveryZone("inside_dhaka")}
                             className="w-4 h-4 text-brand-green focus:ring-brand-green"
                           />
-                          <span className="text-xs sm:text-sm font-bold text-gray-900">
-                            ঢাকার সিটির ভেতরে
-                          </span>
+                          <div>
+                            <p className="text-sm font-black text-gray-900">ঢাকার সিটির ভেতরে</p>
+                            <p className="text-xs text-gray-500">হোম ডেলিভারি (১-২ দিন)</p>
+                          </div>
                         </div>
-                        <span className="text-xs sm:text-sm font-black text-brand-green">
+                        <span className="text-sm font-black text-brand-green">
                           {isFreeShipping ? "ফ্রি" : "৳৭০"}
                         </span>
                       </label>
 
+                      {/* Outside Dhaka */}
                       <label
-                        className={`flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
+                        className={`cursor-pointer rounded-xl border-2 p-3.5 flex items-center justify-between transition ${
                           deliveryZone === "outside_dhaka"
-                            ? "border-brand-green bg-emerald-50/50 shadow-xs"
+                            ? "border-brand-green bg-emerald-50/60 shadow-xs"
                             : "border-gray-200 bg-white hover:border-gray-300"
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-3">
                           <input
                             type="radio"
                             name="shippingZone"
@@ -1435,11 +1457,12 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                             onChange={() => setDeliveryZone("outside_dhaka")}
                             className="w-4 h-4 text-brand-green focus:ring-brand-green"
                           />
-                          <span className="text-xs sm:text-sm font-bold text-gray-900">
-                            ঢাকার বাইরে সারা দেশে
-                          </span>
+                          <div>
+                            <p className="text-sm font-black text-gray-900">ঢাকার বাইরে সারা দেশে</p>
+                            <p className="text-xs text-gray-500">হোম ডেলিভারি (২-৩ দিন)</p>
+                          </div>
                         </div>
-                        <span className="text-xs sm:text-sm font-black text-brand-green">
+                        <span className="text-sm font-black text-brand-green">
                           {isFreeShipping ? "ফ্রি" : "৳১৩০"}
                         </span>
                       </label>
@@ -1448,16 +1471,21 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
 
                   {/* Customer Note (Optional) */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">
-                      বিশেষ নির্দেশনা বা কোনো নোট (ঐচ্ছিক)
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5">
+                      অর্ডার নোট (ঐচ্ছিক)
                     </label>
-                    <input
-                      type="text"
-                      placeholder="যেমন: ডেলিভারির বিশেষ সময় বা মন্তব্য"
-                      value={customerNote}
-                      onChange={(e) => setCustomerNote(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-green focus:ring-0 text-xs sm:text-sm text-gray-900 bg-white"
-                    />
+                    <div className="relative">
+                      <div className="absolute top-3 left-3.5 pointer-events-none text-gray-400">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        value={customerNote}
+                        onChange={(e) => setCustomerNote(e.target.value)}
+                        placeholder="যেমন: ডেলিভারির বিশেষ সময় বা মন্তব্য লিখুন..."
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none text-sm text-gray-900 transition bg-white"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1570,17 +1598,29 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                     <button
                       type="submit"
                       disabled={isSubmitting || selectedProductList.length === 0}
-                      className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#8B3A14] via-[#A8471B] to-[#8B3A14] hover:from-[#722E11] hover:to-[#722E11] text-white font-black text-base sm:text-lg shadow-xl shadow-[#8B3A14]/30 hover:scale-[1.02] active:scale-98 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-2 border-[#C25E18]"
+                      className={`${
+                        !isSubmitting && selectedProductList.length > 0 ? "animate-btn-pulse" : ""
+                      } relative overflow-hidden group w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#8B3A14] via-[#A8471B] to-[#8B3A14] hover:from-[#722E11] hover:to-[#722E11] text-white font-black text-base sm:text-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_14px_28px_-6px_rgba(139,58,20,0.45)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_18px_34px_-6px_rgba(139,58,20,0.55)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-2 border-[#C25E18]`}
                     >
+                      {/* Glace Shine Light Beam */}
+                      {!isSubmitting && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 pointer-events-none w-full h-full overflow-hidden rounded-2xl"
+                        >
+                          <span className="absolute top-0 -left-[150%] w-[120%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-[25deg] animate-glace" />
+                        </span>
+                      )}
+
                       {isSubmitting ? (
                         <>
-                          <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                          <span>অর্ডার প্রসেসিং হচ্ছে...</span>
+                          <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin relative z-10" />
+                          <span className="relative z-10">অর্ডার প্রসেসিং হচ্ছে...</span>
                         </>
                       ) : (
                         <>
-                          <span>অর্ডার কনফার্ম করুন ৳{grandTotal}</span>
-                          <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+                          <span className="relative z-10">অর্ডার কনফার্ম করুন ৳{grandTotal}</span>
+                          <ArrowRight className="w-5 h-5 stroke-[2.5] group-hover:translate-x-1.5 transition-transform duration-200 relative z-10" />
                         </>
                       )}
                     </button>
@@ -1604,126 +1644,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                 </div>
               </form>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 8. WHY CHOOSE SADER VUBON ("কেন স্বাদের ভুবন থেকে নেবেন?") */}
-      <section className="py-12 sm:py-16 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300 mb-2">
-              আমাদের বিশেষত্ব
-            </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-950 font-heading">
-              কেন স্বাদের ভুবন থেকে নেবেন?
-            </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-brand-green to-amber-500 mx-auto my-3 rounded-full" />
-            <p className="text-gray-600 text-sm sm:text-base">
-              খাদ্যের বিশুদ্ধতা ও আপনার সুস্বাস্থ্যই আমাদের সর্বোচ্চ অগ্রাধিকার
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 rounded-2xl bg-[#faf9f6] border border-gray-200 hover:border-brand-green hover:shadow-luxury transition-all">
-              <div className="w-12 h-12 rounded-xl bg-brand-green/20 text-brand-green flex items-center justify-center mb-4">
-                <Award className="w-6 h-6 stroke-[2.2]" />
-              </div>
-              <h3 className="text-base font-black text-gray-950 mb-2 leading-tight">
-                শতভাগ ভেজাল ও কেমিক্যালমুক্ত
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                কোনো প্রকার কৃত্রিম চিনি, হাইড্রোজ, রাসায়নিক বা রং ব্যবহার করা হয় না। সম্পূর্ণ প্রাকৃতিক।
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#faf9f6] border border-gray-200 hover:border-amber-400 hover:shadow-luxury transition-all">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center mb-4">
-                <Flame className="w-6 h-6 stroke-[2.2]" />
-              </div>
-              <h3 className="text-base font-black text-gray-950 mb-2 leading-tight">
-                সনাতন মাটির চুলায় প্রস্তুত
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                দক্ষ গাছিদের নিজস্ব তত্ত্বাবধানে ভোরবেলার টাটকা রস দিয়ে মাটির চুলায় কাঠের আগুনে ধীরে ধীরে জ্বাল দিয়ে তৈরি।
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#faf9f6] border border-gray-200 hover:border-brand-green hover:shadow-luxury transition-all">
-              <div className="w-12 h-12 rounded-xl bg-brand-green/20 text-brand-green flex items-center justify-center mb-4">
-                <Package className="w-6 h-6 stroke-[2.2]" />
-              </div>
-              <h3 className="text-base font-black text-gray-950 mb-2 leading-tight">
-                উন্নত ফুড-গ্রেড প্যাকিং
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                স্বাস্থ্যসম্মত ফুড-গ্রেড জার ও পাত্রে বাতাস নিরোধক সিল এবং বাবল র‍্যাপ করে সর্বোচ্চ সুরক্ষায় ডেলিভারি।
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#faf9f6] border border-gray-200 hover:border-amber-400 hover:shadow-luxury transition-all">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center mb-4">
-                <HeartHandshake className="w-6 h-6 stroke-[2.2]" />
-              </div>
-              <h3 className="text-base font-black text-gray-950 mb-2 leading-tight">
-                সন্তুষ্টি গ্যারান্টি ও সহজ রিটার্ন
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                পণ্য হাতে পেয়ে দেখে পছন্দ না হলে বা কোনো সমস্যা থাকলে তাৎক্ষণিক রিটার্ন ও রিফান্ড সুবিধা।
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 9. FAQ ACCORDION SECTION */}
-      <section className="py-12 sm:py-16 bg-[#faf9f6] border-t border-gray-200">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold border border-amber-300 mb-2">
-              সাধারণ জিজ্ঞাসা
-            </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-950 font-heading">
-              সচরাচর জিজ্ঞাসিত প্রশ্নাবলী (FAQ)
-            </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-amber-500 to-brand-green mx-auto my-3 rounded-full" />
-            <p className="text-gray-600 text-sm sm:text-base">
-              আপনার মনে কোনো প্রশ্ন থাকলে নিচের উত্তরগুলো দেখতে পারেন
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto space-y-3">
-            {FAQS.map((faq, index) => {
-              const isOpen = openFaqIndex === index;
-              return (
-                <div
-                  key={index}
-                  className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs transition-all"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                    className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-bold text-gray-900 text-sm sm:text-base hover:text-brand-green transition-colors cursor-pointer select-none"
-                  >
-                    <span className="flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-amber-500 shrink-0" />
-                      <span>{faq.question}</span>
-                    </span>
-                    <ChevronDown
-                      className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-300 ${
-                        isOpen ? "rotate-180 text-brand-green" : ""
-                      }`}
-                    />
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-gray-100">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>
@@ -1971,7 +1892,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
           {/* Winter Village Tradition Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/70 backdrop-blur-md border border-emerald-600/40 text-emerald-200 text-xs font-bold shadow-sm">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span>ঐতিহ্যবাহী রাজশাহীর চারঘাট ও বাঘার খাঁটি খেজুরের গুড়</span>
+            <span>ঐতিহ্যবাহী রাজশাহীর খাঁটি খেজুরের গুড়</span>
           </div>
 
           <div className="flex items-center justify-center gap-3">
@@ -1986,9 +1907,15 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                 />
               </div>
             </div>
-            <span className="text-xl sm:text-2xl font-black text-white font-heading">
-              {siteConfig.name} ({siteConfig.englishName})
-            </span>
+            <div className="text-left">
+              <span className="text-xl sm:text-2xl font-black text-white font-heading block leading-tight">
+                {siteConfig.name}
+              </span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-amber-400 block tracking-widest uppercase mt-0.5">
+                best in taste & purity
+              </span>
+            </div>
+
           </div>
 
           <div className="text-xs sm:text-sm text-emerald-100/80 max-w-2xl mx-auto space-y-1.5">
@@ -2038,10 +1965,18 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
           <button
             type="button"
             onClick={() => scrollToOrderForm()}
-            className="flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-[#8B3A14] to-[#A8471B] hover:from-[#722E11] hover:to-[#722E11] text-white font-black text-sm flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
+            className="animate-btn-pulse relative overflow-hidden group flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-[#8B3A14] to-[#A8471B] hover:from-[#722E11] hover:to-[#722E11] text-white font-black text-sm flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
           >
-            <ShoppingBag className="w-4 h-4 text-white" />
-            <span>অর্ডার করুন (৳{grandTotal})</span>
+            {/* Glace Shine Light Beam */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none w-full h-full overflow-hidden rounded-xl"
+            >
+              <span className="absolute top-0 -left-[150%] w-[120%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-[25deg] animate-glace" />
+            </span>
+
+            <ShoppingBag className="w-4 h-4 text-white relative z-10" />
+            <span className="relative z-10">অর্ডার করুন (৳{grandTotal})</span>
           </button>
         </div>
       </div>
@@ -2087,6 +2022,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
               </span>
               <span>স্ক্রিনের যেকোনো জায়গায় ক্লিক করে বন্ধ করুন</span>
             </div>
+
           </div>
         </div>
       )}

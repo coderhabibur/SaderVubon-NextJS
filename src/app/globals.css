@@ -217,3 +217,127 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   color: #107c41;
   font-weight: 800;
 }
+
+/* Floating UI Badges Animations */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 3.8s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 4.2s ease-in-out infinite;
+}
+
+/* Hero Heading Molasses Text Animations */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes text-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 0px rgba(180, 83, 9, 0));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 2px 12px rgba(194, 94, 24, 0.45));
+    transform: scale(1.02);
+  }
+}
+
+.animate-gur-text {
+  background-size: 200% auto;
+  animation: gradient-flow 3.5s ease-in-out infinite;
+}
+
+.animate-gur-pulse {
+  animation: text-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes typewriter-cursor {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-typewriter-cursor {
+  animation: typewriter-cursor 0.75s infinite;
+}
+
+/* Glace / Glossy Shimmer Animation for CTA Buttons */
+@keyframes glace-shine {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  45% {
+    transform: translateX(260%) skewX(-25deg);
+    opacity: 1;
+  }
+  46%, 100% {
+    transform: translateX(260%) skewX(-25deg);
+    opacity: 0;
+  }
+}
+
+.animate-glace {
+  animation: glace-shine 4.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* CTA Button Gentle Pulse / Breathing Scale Animation (Grow & Shrink) */
+@keyframes button-breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+.animate-btn-pulse {
+  animation: button-breathe 2.4s ease-in-out infinite;
+}
+
+.animate-btn-pulse:hover {
+  animation-play-state: paused;
+  transform: scale(1.05);
+}
+
+.animate-btn-pulse:active {
+  transform: scale(0.98);
+}
+
+.animate-btn-pulse:disabled {
+  animation: none;
+  transform: none;
+}

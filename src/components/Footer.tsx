@@ -46,15 +46,10 @@ export function Footer() {
                   স্বাদের ভুবন
                 </span>
                 <span className="text-[10px] font-black text-amber-400 block tracking-widest uppercase mt-0.5">
-                  Sader Vubon • Pure Food
+                  best in taste & purity
                 </span>
               </div>
             </Link>
-
-            <div className="inline-flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-800/80 px-3 py-1 rounded-full text-xs text-amber-300 font-bold mb-3 shadow-xs">
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>{siteConfig.tagline}</span>
-            </div>
 
             <p className="text-emerald-100/70 text-sm leading-relaxed mb-6 max-w-sm">
               {siteConfig.description}

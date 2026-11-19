@@ -4,8 +4,11 @@ import { ChevronRight, FileText } from "lucide-react";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Sader Vubon",
-  description: "Terms and conditions governing the use of Sader Vubon e-commerce platform and product purchases.",
+  title: `শর্তাবলী ও নিয়মাবলী (Terms & Conditions) | ${siteConfig.name}`,
+  description: `স্বাদের ভুবন থেকে পণ্য ক্রয় ও ব্যবহারের যাবতীয় নিয়মাবলী ও শর্তসমূহ।`,
+  alternates: {
+    canonical: `${siteConfig.url}/terms`,
+  },
 };
 
 export default function TermsPage() {
