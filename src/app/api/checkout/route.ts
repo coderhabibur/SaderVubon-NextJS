@@ -47,11 +47,14 @@ export async function POST(req: Request) {
 
     if (!isFreeShipping) {
       if (deliveryZone === "inside_dhaka") {
-        shippingFee = 70;
-        shippingTitle = "ঢাকার ভেতরে ডেলিভারি চার্জ";
+        shippingFee = 80;
+        shippingTitle = "ঢাকার সিটির মধ্যে ডেলিভারি চার্জ";
+      } else if (deliveryZone === "inside_rajshahi") {
+        shippingFee = 50;
+        shippingTitle = "রাজশাহীর মধ্যে ডেলিভারি চার্জ";
       } else {
-        shippingFee = 130;
-        shippingTitle = "ঢাকার বাইরে সারা দেশে ডেলিভারি চার্জ";
+        shippingFee = 100;
+        shippingTitle = "ঢাকার সিটির বাইরে ডেলিভারি চার্জ";
       }
     }
 
@@ -75,7 +78,13 @@ export async function POST(req: Request) {
       };
     });
 
-    const determinedCity = city?.trim() || (deliveryZone === "inside_dhaka" ? "Dhaka" : "Outside Dhaka");
+    const determinedCity =
+      city?.trim() ||
+      (deliveryZone === "inside_dhaka"
+        ? "Dhaka"
+        : deliveryZone === "inside_rajshahi"
+        ? "Rajshahi"
+        : "Outside Dhaka");
     const sanitizedPhone = cleanPhone.startsWith("+88") ? cleanPhone.slice(3) : cleanPhone.startsWith("88") ? cleanPhone.slice(2) : cleanPhone;
 
     // 4. Construct WooCommerce Order Payload

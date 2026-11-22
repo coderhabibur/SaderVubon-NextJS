@@ -69,10 +69,10 @@ export default function WishlistPage() {
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-brand-green transition">
-            Home
+            হোম
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-          <span className="text-gray-900 font-bold">Wishlist</span>
+          <span className="text-gray-900 font-bold">পছন্দের তালিকা</span>
         </nav>
 
         {/* Page Header */}

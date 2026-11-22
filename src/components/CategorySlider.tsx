@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 
 export interface CategoryItem {
   name: string;
-  englishName: string;
+  englishName?: string;
   itemCount: string;
   image: string;
   link: string;
@@ -115,9 +115,6 @@ export function CategorySlider({ categories }: CategorySliderProps) {
 
             {/* Bottom Content */}
             <div className="relative z-10 p-5 transform group-hover:-translate-y-1 transition-transform duration-300">
-              <span className="text-[10px] font-bold text-amber-400 tracking-wider uppercase block mb-1">
-                {cat.englishName}
-              </span>
               <h3 className="text-xl font-black text-white leading-tight font-heading group-hover:text-amber-300 transition-colors">
                 {cat.name}
               </h3>

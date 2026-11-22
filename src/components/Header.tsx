@@ -4,28 +4,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, ChevronDown, User, Phone, Menu, X, MessageCircle, Heart, Sparkles, Search } from "lucide-react";
+import { ShoppingBag, ChevronDown, ChevronRight, User, Phone, Menu, X, MessageCircle, Heart, Sparkles, Search } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { MobileOffcanvasMenu } from "@/components/MobileOffcanvasMenu";
+import { NavMenuItem, FALLBACK_NAV_ITEMS, buildMenuTree, normalizeCategorySlug, doCategorySlugsMatch } from "@/lib/woocommerce";
 
-const NAV_ITEMS = [
-  { label: "সকল পণ্য", href: "/shop" },
-  { label: "খেজুরের গুড়", href: "/category/gur" },
-  { label: "তালের গুড়", href: "/category/taler-gur" },
-  { label: "ঘরোয়া আচার", href: "/category/pickle" },
-  { label: "খাঁটি মধু", href: "/category/honey" },
-  { label: "ঘানির তেল", href: "/category/oil" },
-  { label: "রাজশাহীর আম", href: "/category/mango" },
-  { label: "🔥 ধামাকা অফার", href: "/category/offer", isSpecial: true },
-  { label: "আমাদের কথা", href: "/about" },
-  { label: "যোগাযোগ", href: "/contact" },
-];
+interface HeaderProps {
+  navItems?: NavMenuItem[];
+}
 
-export function Header() {
+export function Header({ navItems: initialNavItems }: HeaderProps = {}) {
+  const [navItems, setNavItems] = useState<NavMenuItem[]>(
+    initialNavItems && initialNavItems.length > 0 ? initialNavItems : FALLBACK_NAV_ITEMS
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -33,6 +28,25 @@ export function Header() {
   const { totalWishlistItems } = useWishlist();
   const { user } = useAuth();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (initialNavItems && initialNavItems.length > 0) {
+      setNavItems(initialNavItems);
+      return;
+    }
+
+    // Fallback: If not provided by server layout, fetch from same-origin Next.js API
+    fetch("/api/menu")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setNavItems(data);
+        }
+      })
+      .catch(() => {
+        // Silently keep fallback items
+      });
+  }, [initialNavItems]);
 
   // Close mobile search when navigating to a new page
   useEffect(() => {
@@ -47,11 +61,64 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const [searchCategory, setSearchCategory] = useState<string | null>(null);
+
+  // Sync category filter from URL (works across standard navigation and AJAX history pushState)
+  useEffect(() => {
+    const updateSearchCategory = () => {
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        setSearchCategory(params.get("category"));
+      }
+    };
+    updateSearchCategory();
+    window.addEventListener("popstate", updateSearchCategory);
+    return () => window.removeEventListener("popstate", updateSearchCategory);
+  }, [pathname]);
+
   const isLinkActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
+    if (!href) return false;
+
+    const normHref = normalizeCategorySlug(href);
+    const normPath = normalizeCategorySlug(pathname);
+
+    // Exact match for homepage
+    if (href === "/" || normHref === "") {
+      return pathname === "/" || normPath === "";
     }
-    return pathname === href || pathname.startsWith(`${href}/`);
+
+    // Category Links (/category/...)
+    if (href.includes("/category/")) {
+      const itemSlug = href.split("/category/")[1]?.split("/")[0]?.split("?")[0];
+
+      // If current page is /category/[slug]
+      if (pathname.includes("/category/")) {
+        const pageSlug = pathname.split("/category/")[1]?.split("/")[0]?.split("?")[0];
+        return doCategorySlugsMatch(itemSlug, pageSlug);
+      }
+
+      // If current page is /shop?category=...
+      if (pathname === "/shop" && searchCategory && searchCategory !== "all") {
+        return doCategorySlugsMatch(itemSlug, searchCategory);
+      }
+
+      return false;
+    }
+
+    // All Products (/shop)
+    if (href === "/shop" || normHref === "shop") {
+      if (pathname === "/shop") {
+        return !searchCategory || searchCategory === "all";
+      }
+      return false;
+    }
+
+    // Other standard pages: /about, /contact, /terms, etc.
+    return (
+      normPath === normHref ||
+      pathname === href ||
+      (normHref.length > 1 && normPath.startsWith(normHref))
+    );
   };
 
   // Standalone funnel landing pages render their own dedicated sales header
@@ -92,16 +159,17 @@ export function Header() {
           </div>
 
           {/* Right: Helpline & WhatsApp */}
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-2.5 sm:gap-4 text-xs">
             <a
               href={`tel:${siteConfig.contact.hotline}`}
-              className="flex items-center gap-1.5 text-gray-200 hover:text-amber-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-gray-950 font-extrabold shadow-xs transition-all active:scale-95 text-[11px] sm:text-xs tracking-wide group"
+              aria-label={`Call hotline ${siteConfig.contact.hotline}`}
             >
-              <div className="w-5 h-5 rounded-full bg-emerald-800/80 flex items-center justify-center text-amber-400">
-                <Phone className="w-3 h-3" />
+              <div className="w-4 h-4 rounded-full bg-emerald-950 text-amber-400 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform">
+                <Phone className="w-2.5 h-2.5 stroke-[2.8]" />
               </div>
-              <span className="hidden md:inline text-emerald-300">হটলাইন:</span>
-              <strong className="text-white font-bold tracking-wide">{siteConfig.contact.hotline}</strong>
+              <span className="hidden md:inline font-bold text-gray-900">হটলাইন:</span>
+              <span className="font-black text-gray-950">{siteConfig.contact.hotline}</span>
             </a>
 
             <span className="text-emerald-700 hidden md:inline">|</span>
@@ -140,7 +208,7 @@ export function Header() {
                 <Menu className="w-6 h-6" />
               </button>
 
-              <Link href="/" className="flex items-center gap-3 group">
+              <Link href="/" prefetch={true} className="flex items-center gap-3 group">
                 <div className="relative w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-tr from-emerald-50 via-white to-amber-50 p-1 border border-emerald-100 shadow-sm group-hover:shadow-md transition-all duration-300">
                   <div className="relative w-full h-full">
                     <Image
@@ -192,6 +260,7 @@ export function Header() {
               {/* Account (Icon Only) */}
               <Link
                 href="/account"
+                prefetch={true}
                 className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-emerald-50/90 hover:bg-emerald-100 text-emerald-800 transition-all duration-200 hover:scale-105 border border-emerald-200/50 shadow-2xs"
                 title={user ? user.firstName || user.name || "মাই একাউন্ট" : "লগইন / সাইন আপ"}
                 aria-label="লগইন বা একাউন্ট"
@@ -217,10 +286,11 @@ export function Header() {
                 )}
               </button>
 
-              {/* Wishlist */}
+              {/* Wishlist (Desktop / Tablet only, hidden on mobile) */}
               <Link
                 href="/wishlist"
-                className="relative p-2.5 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-rose-600 transition"
+                prefetch={true}
+                className="hidden sm:flex relative p-2.5 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-rose-600 transition"
                 aria-label="পছন্দের তালিকা"
               >
                 <Heart className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]" />
@@ -266,13 +336,15 @@ export function Header() {
       </div>
 
       {/* 3. Category Navbar - Desktop Only */}
-      <nav className="hidden lg:block bg-[#fcfbf9] border-b border-gray-200/80">
-        <div className="container mx-auto px-4 lg:px-8">
-          <ul className="flex items-center justify-center gap-1 overflow-x-auto py-1">
-            {NAV_ITEMS.map((item, idx) => {
+      <nav className="hidden lg:block bg-[#fcfbf9] border-b border-gray-200/80 relative z-40 overflow-visible">
+        <div className="container mx-auto px-4 lg:px-8 overflow-visible">
+          <ul className="flex flex-wrap items-center justify-center gap-1 py-1 overflow-visible">
+            {navItems.map((item, idx) => {
+              const hasChildren = item.children && item.children.length > 0;
               const active = isLinkActive(item.href);
+
               return (
-                <li key={idx} className="shrink-0">
+                <li key={item.id ?? idx} className="relative group shrink-0">
                   <Link
                     href={item.href}
                     prefetch={true}
@@ -284,8 +356,51 @@ export function Header() {
                         : "text-gray-700 hover:text-emerald-800 hover:bg-white"
                     }`}
                   >
-                    {item.label}
+                    <span>{item.label}</span>
+                    {hasChildren && (
+                      <ChevronDown className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-800 group-hover:rotate-180 transition-transform duration-200" />
+                    )}
                   </Link>
+
+                  {/* Luxury Dropdown Menu on Desktop Hover */}
+                  {hasChildren && (
+                    <div className="absolute top-full left-0 pt-1 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                      <div className="min-w-[230px] bg-white rounded-2xl shadow-[0_20px_40px_-8px_rgba(0,0,0,0.2)] border border-gray-200/80 overflow-hidden">
+                        {/* Decorative Top Accent Bar */}
+                        <div className="h-1 bg-gradient-to-r from-emerald-600 via-amber-500 to-emerald-700" />
+
+                        <ul className="p-1.5 space-y-0.5">
+                          {item.children!.map((child, cIdx) => (
+                            <li key={child.id ?? cIdx}>
+                              <Link
+                                href={child.href}
+                                prefetch={true}
+                                className="group/child flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 hover:text-emerald-900 hover:bg-gradient-to-r hover:from-emerald-50/90 hover:to-amber-50/50 transition-all duration-150"
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 group-hover/child:bg-emerald-600 group-hover/child:scale-125 transition-all" />
+                                  <span>{child.label}</span>
+                                </div>
+                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover/child:text-emerald-700 group-hover/child:translate-x-0.5 transition-all" />
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* Dropdown Footer: View All in this Category */}
+                        <div className="border-t border-gray-100 bg-[#FAF9F6] px-3.5 py-2.5">
+                          <Link
+                            href={item.href}
+                            prefetch={true}
+                            className="flex items-center justify-between text-[11px] font-extrabold text-emerald-800 hover:text-amber-700 transition"
+                          >
+                            <span>সকল {item.label} দেখুন</span>
+                            <ChevronRight className="w-3 h-3 text-emerald-700" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </li>
               );
             })}
@@ -297,6 +412,7 @@ export function Header() {
       <MobileOffcanvasMenu
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        navItems={navItems}
       />
     </header>
   );

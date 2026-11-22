@@ -53,11 +53,11 @@ export default async function ShopPage() {
       <div className="container mx-auto px-4 lg:px-8">
         {/* 1. Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
-          <Link href="/" className="hover:text-brand-green transition">
+          <Link href="/" prefetch={true} className="hover:text-brand-green transition">
             হোম
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-          <span className="text-gray-900 font-bold">শপ (সকল পণ্য)</span>
+          <span className="text-gray-900 font-bold">সকল পণ্য</span>
         </nav>
 
         {/* 2. Page Header Banner */}

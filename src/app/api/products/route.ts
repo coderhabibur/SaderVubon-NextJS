@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getFilteredProductsWithPagination, getLiveCategories } from "@/lib/woocommerce";
+import { getFilteredProductsWithPagination, getLiveCategories, findCategoryBySlugOrName } from "@/lib/woocommerce";
 
 export async function GET(req: Request) {
   try {
@@ -16,11 +16,9 @@ export async function GET(req: Request) {
 
     // Determine category ID if filtering by slug
     let categoryId: number | undefined;
-    if (category && category !== "all") {
+    if (category && category !== "all" && category !== "all-products") {
       const categories = await getLiveCategories();
-      const matched = categories.find(
-        (c) => c.slug.toLowerCase() === category.toLowerCase()
-      );
+      const matched = findCategoryBySlugOrName(categories, category);
       if (matched) {
         categoryId = matched.id;
       }
@@ -35,6 +33,9 @@ export async function GET(req: Request) {
       order = "asc";
     } else if (sort === "price_desc") {
       orderby = "price";
+      order = "desc";
+    } else if (sort === "popularity") {
+      orderby = "popularity";
       order = "desc";
     }
 

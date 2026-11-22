@@ -84,12 +84,12 @@ export function CustomerReviews() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-[#f9f8f4] to-white relative overflow-hidden">
+    <section className="py-10 sm:py-16 lg:py-20 bg-gradient-to-b from-[#f9f8f4] to-white relative overflow-hidden">
       {/* Decorative Blur Background */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-72 bg-amber-400/5 blur-3xl pointer-events-none rounded-full" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-12 gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 shadow-xs mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />

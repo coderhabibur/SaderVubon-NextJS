@@ -41,10 +41,7 @@ export default function CategoryLoading() {
             {/* Top Toolbar Skeleton */}
             <div className="bg-white rounded-2xl p-4 border border-gray-200/80 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
               <div className="h-4 w-40 bg-gray-200 rounded-md" />
-              <div className="flex gap-2">
-                <div className="h-8 w-20 bg-gray-100 rounded-xl" />
-                <div className="h-8 w-24 bg-gray-100 rounded-xl" />
-              </div>
+              <div className="h-9 w-36 bg-gray-100 rounded-xl" />
             </div>
 
             {/* Product Cards Grid */}

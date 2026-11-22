@@ -34,7 +34,7 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
-  const [deliveryZone, setDeliveryZone] = useState<"inside_dhaka" | "outside_dhaka">("inside_dhaka");
+  const [deliveryZone, setDeliveryZone] = useState<"inside_dhaka" | "outside_dhaka" | "inside_rajshahi">("inside_dhaka");
   const [customerNote, setCustomerNote] = useState("");
 
   // UI / Submission State
@@ -54,7 +54,13 @@ export default function CheckoutPage() {
 
   // Shipping Calculations
   const isFreeDelivery = subtotal >= 2500;
-  const shippingFee = isFreeDelivery ? 0 : deliveryZone === "inside_dhaka" ? 70 : 130;
+  const shippingFee = isFreeDelivery
+    ? 0
+    : deliveryZone === "inside_dhaka"
+    ? 80
+    : deliveryZone === "inside_rajshahi"
+    ? 50
+    : 100;
   const grandTotal = subtotal + shippingFee;
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
@@ -298,56 +304,94 @@ export default function CheckoutPage() {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="rounded-2xl border-2 border-gray-200 bg-white overflow-hidden divide-y divide-gray-200 shadow-2xs">
                       {/* Inside Dhaka */}
                       <label
-                        className={`cursor-pointer rounded-xl border-2 p-3.5 flex items-center justify-between transition ${
+                        className={`cursor-pointer px-4 py-3.5 flex items-center justify-between transition ${
                           deliveryZone === "inside_dhaka"
-                            ? "border-brand-green bg-emerald-50/60 shadow-xs"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                           <input
                             type="radio"
                             name="deliveryZone"
                             checked={deliveryZone === "inside_dhaka"}
                             onChange={() => setDeliveryZone("inside_dhaka")}
-                            className="w-4 h-4 text-brand-green focus:ring-brand-green"
+                            className="w-4 h-4 text-brand-green focus:ring-brand-green shrink-0 cursor-pointer"
                           />
-                          <div>
-                            <p className="text-sm font-black text-gray-900">ঢাকার সিটির ভেতরে</p>
-                            <p className="text-xs text-gray-500">হোম ডেলিভারি (১-২ দিন)</p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-bold text-gray-900">
+                              ঢাকার সিটির মধ্যে:
+                            </span>
+                            <span className="text-xs text-gray-500 font-normal">
+                              (হোম ডেলিভারি ১-২ দিন)
+                            </span>
                           </div>
                         </div>
-                        <span className="text-sm font-black text-brand-green">
-                          {isFreeDelivery ? "ফ্রি" : "৳৭০"}
+                        <span className="text-sm sm:text-base font-black text-brand-green shrink-0 ml-3">
+                          {isFreeDelivery ? "ফ্রি" : "80৳"}
                         </span>
                       </label>
 
                       {/* Outside Dhaka */}
                       <label
-                        className={`cursor-pointer rounded-xl border-2 p-3.5 flex items-center justify-between transition ${
+                        className={`cursor-pointer px-4 py-3.5 flex items-center justify-between transition ${
                           deliveryZone === "outside_dhaka"
-                            ? "border-brand-green bg-emerald-50/60 shadow-xs"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                           <input
                             type="radio"
                             name="deliveryZone"
                             checked={deliveryZone === "outside_dhaka"}
                             onChange={() => setDeliveryZone("outside_dhaka")}
-                            className="w-4 h-4 text-brand-green focus:ring-brand-green"
+                            className="w-4 h-4 text-brand-green focus:ring-brand-green shrink-0 cursor-pointer"
                           />
-                          <div>
-                            <p className="text-sm font-black text-gray-900">ঢাকার বাইরে সারা দেশে</p>
-                            <p className="text-xs text-gray-500">হোম ডেলিভারি (২-৩ দিন)</p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-bold text-gray-900">
+                              ঢাকার সিটির বাইরে:
+                            </span>
+                            <span className="text-xs text-gray-500 font-normal">
+                              (হোম ডেলিভারি ২-৩ দিন)
+                            </span>
                           </div>
                         </div>
-                        <span className="text-sm font-black text-brand-green">
-                          {isFreeDelivery ? "ফ্রি" : "৳১৩০"}
+                        <span className="text-sm sm:text-base font-black text-brand-green shrink-0 ml-3">
+                          {isFreeDelivery ? "ফ্রি" : "100৳"}
+                        </span>
+                      </label>
+
+                      {/* Inside Rajshahi */}
+                      <label
+                        className={`cursor-pointer px-4 py-3.5 flex items-center justify-between transition ${
+                          deliveryZone === "inside_rajshahi"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <input
+                            type="radio"
+                            name="deliveryZone"
+                            checked={deliveryZone === "inside_rajshahi"}
+                            onChange={() => setDeliveryZone("inside_rajshahi")}
+                            className="w-4 h-4 text-brand-green focus:ring-brand-green shrink-0 cursor-pointer"
+                          />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-bold text-gray-900">
+                              রাজশাহীর মধ্যে:
+                            </span>
+                            <span className="text-xs text-gray-500 font-normal">
+                              (হোম ডেলিভারি ২৪ ঘণ্টা)
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-sm sm:text-base font-black text-brand-green shrink-0 ml-3">
+                          {isFreeDelivery ? "ফ্রি" : "50৳"}
                         </span>
                       </label>
                     </div>

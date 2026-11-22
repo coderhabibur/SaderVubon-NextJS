@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Check, X, RotateCcw, Filter, Sparkles, Truck, ShieldCheck, Phone, Scale, Palette, Sliders } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { AttributeFilterGroup } from "@/lib/woocommerce";
+import { AttributeFilterGroup, normalizeCategorySlug } from "@/lib/woocommerce";
 
 interface Category {
   id: number;
@@ -34,14 +34,63 @@ interface ShopFilterSidebarProps {
 
 const CATEGORY_MAP: Record<string, string> = {
   all: "সকল পণ্য",
-  gur: "খেজুর ও আখের গুড়",
+  gur: "খেজুরের গুড়",
+  "khejur-gur": "খেজুরের গুড়",
+  "akher-gur": "আখের গুড়",
   "taler-gur": "তালের গুড়",
-  honey: "সুন্দরবনের মধু",
+  honey: "মধু",
   oil: "ঘানির সরিষার তেল",
-  pickle: "ঘরোয়া স্পেশাল আচার",
+  pickle: "ঘরোয়া আচার",
   mango: "রাজশাহীর আম",
   offer: "স্পেশাল অফার",
 };
+
+// Priority sequence matching header navigation:
+// 1. খেজুরের গুড়, 2. তালের গুড়, 3. আখের গুড়, 4. ঘরোয়া আচার, 5. মধু, 6. রাজশাহীর আম, 7. ঘানির সরিষার তেল, 8. স্পেশাল অফার
+function getCategoryPriority(cat: Category): number {
+  const slug = normalizeCategorySlug(cat.slug);
+  const name = normalizeCategorySlug(cat.name);
+
+  if (slug.includes("khejur") || name.includes("খেজুর")) return 1;
+  if (slug.includes("taler") || name.includes("তাল")) return 2;
+  if (slug.includes("akher") || name.includes("আখ")) return 3;
+  if (slug === "pickle" || name.includes("আচার")) return 4;
+  if (slug === "honey" || name.includes("মধু")) return 5;
+  if (slug === "mango" || name.includes("আম")) return 6;
+  if (slug === "oil" || name.includes("তেল")) return 7;
+  if (slug === "offer" || name.includes("অফার")) return 8;
+
+  return 99;
+}
+
+function getCategoryDisplayName(cat: Category): string {
+  const slug = normalizeCategorySlug(cat.slug);
+  const name = normalizeCategorySlug(cat.name);
+
+  if (slug.includes("khejur") || name.includes("খেজুর")) return "খেজুরের গুড়";
+  if (slug.includes("taler") || name.includes("তাল")) return "তালের গুড়";
+  if (slug.includes("akher") || name.includes("আখ")) return "আখের গুড়";
+  if (slug === "pickle" || name.includes("আচার")) return "ঘরোয়া আচার";
+  if (slug === "honey" || name.includes("মধু")) return "মধু";
+  if (slug === "mango" || name.includes("আম")) return "রাজশাহীর আম";
+  if (slug === "oil" || name.includes("তেল")) return "ঘানির সরিষার তেল";
+  if (slug === "offer" || name.includes("অফার")) return "স্পেশাল অফার";
+
+  return CATEGORY_MAP[cat.slug] || cat.name;
+}
+
+function getActiveFilterLabel(currentCat: string): string {
+  const norm = normalizeCategorySlug(currentCat);
+  if (norm === "gur" || norm.includes("khejur") || norm.includes("খেজুর")) return "খেজুরের গুড়";
+  if (norm.includes("taler") || norm.includes("তাল")) return "তালের গুড়";
+  if (norm.includes("akher") || norm.includes("আখ")) return "আখের গুড়";
+  if (norm === "pickle" || norm.includes("আচার")) return "ঘরোয়া আচার";
+  if (norm === "honey" || norm.includes("মধু")) return "মধু";
+  if (norm === "mango" || norm.includes("আম")) return "রাজশাহীর আম";
+  if (norm === "oil" || norm.includes("তেল")) return "ঘানির সরিষার তেল";
+  if (norm === "offer" || norm.includes("অফার")) return "স্পেশাল অফার";
+  return CATEGORY_MAP[currentCat] || currentCat;
+}
 
 // Helper to convert Bengali numbers & weights into grams for perfect numeric sorting
 function parseWeightToGrams(str: string): number {
@@ -220,14 +269,18 @@ export function ShopFilterSidebar({
   };
 
   // Clean and filter valid user-facing categories
-  const displayCategories = categories.filter((cat) => {
-    const slug = cat.slug.toLowerCase();
-    const name = cat.name.toLowerCase();
-    if (slug === "all-products" || name === "all products") return false;
-    if (slug === "uncategorized" || name === "uncategorized") return false;
-    if (slug.includes("%e0%a6")) return false;
-    return true;
-  });
+  const displayCategories = categories
+    .filter((cat) => {
+      const slug = normalizeCategorySlug(cat.slug);
+      const name = normalizeCategorySlug(cat.name);
+      if (slug === "all-products" || name === "all-products" || name === "all products" || name === "সকল-পণ্য") return false;
+      if (slug === "uncategorized" || name === "uncategorized") return false;
+      // Exclude generic/parent 'gur' category as specific gur subcategories are already separate
+      if (slug === "gur" || name === "gur") return false;
+      if (cat.count === 0) return false;
+      return true;
+    })
+    .sort((a, b) => getCategoryPriority(a) - getCategoryPriority(b));
 
   const hasActiveFilters =
     (currentCategory && currentCategory !== "all") ||
@@ -287,7 +340,7 @@ export function ShopFilterSidebar({
           <div className="flex flex-wrap gap-1.5">
             {currentCategory && currentCategory !== "all" && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-emerald-200 text-xs font-bold text-gray-800 shadow-2xs">
-                <span>{CATEGORY_MAP[currentCategory] || currentCategory}</span>
+                <span>{getActiveFilterLabel(currentCategory)}</span>
                 <Link
                   href="/shop"
                   onClick={(e) => handleCategoryClick(e, "all")}
@@ -365,7 +418,15 @@ export function ShopFilterSidebar({
           </li>
 
           {displayCategories.map((cat) => {
-            const isActive = currentCategory.toLowerCase() === cat.slug.toLowerCase();
+            const normCurrent = normalizeCategorySlug(currentCategory);
+            const isKhejurGur =
+              normalizeCategorySlug(cat.slug).includes("khejur") ||
+              normalizeCategorySlug(cat.name).includes("খেজুর");
+            const isActive =
+              normCurrent === normalizeCategorySlug(cat.slug) ||
+              normCurrent === normalizeCategorySlug(cat.name) ||
+              normCurrent === String(cat.id) ||
+              ((normCurrent === "gur" || normCurrent === "khejur-gur") && isKhejurGur);
             return (
               <li key={cat.id}>
                 <Link
@@ -387,7 +448,7 @@ export function ShopFilterSidebar({
                     >
                       {isActive && <Check className="w-3 h-3 stroke-[3]" />}
                     </div>
-                    <span className="truncate">{CATEGORY_MAP[cat.slug] || cat.name}</span>
+                    <span className="truncate">{getCategoryDisplayName(cat)}</span>
                   </div>
                   <span
                     className={`text-[11px] px-2 py-0.5 rounded-full shrink-0 font-extrabold ${

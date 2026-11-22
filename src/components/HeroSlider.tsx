@@ -21,36 +21,36 @@ export interface HeroSlide {
 
 const slides: HeroSlide[] = [
   {
-    badge: "🥣 যশোরের ঐতিহ্যবাহী শীতের গুড়",
+    badge: "রাজশাহীর ঐতিহ্যবাহী খেজুরের গুড়",
     titlePrimary: "শীতের পিঠা-পায়েসের আসল সুবাস",
-    titleHighlight: "খাঁটি খেজুরের পাটালি ও ঝোলা গুড়",
-    description: "কোনো প্রকার চিনি, হাইড্রোজ বা কেমিক্যাল ছাড়া মাটির চুলায় গাঢ় করা শতভাগ খাঁটি ও প্রাকৃতিক খেজুরের গুড়।",
+    titleHighlight: "খাঁটি খেজুরের গুড়",
+    description: "কোনো প্রকার চিনি, হাইড্রোজ বা কেমিক্যাল ছাড়া মাটির চুলায় তৈরি করা হয় শতভাগ খাঁটি ও প্রাকৃতিক খেজুরের গুড়।",
     image: "https://sadervubon.com/wp-content/uploads/2025/12/combo-package-photo-min-scaled.jpg",
     imageTag: "TRADITIONAL KHEJUR GUR",
     imageTitle: "স্বাদে ও ঘ্রাণে অতুলনীয় সেরা খেজুরের গুড়",
     btnPrimaryText: "খেজুরের গুড় অর্ডার করুন",
-    btnPrimaryLink: "/category/gur",
+    btnPrimaryLink: "/category/khejur-gur",
     btnSecondaryText: "সকল পণ্য দেখুন",
     btnSecondaryLink: "/shop",
   },
   {
-    badge: "🌴 গ্রাম-বাংলার ঐতিহ্যবাহী মিষ্টি",
+    badge: "গ্রাম-বাংলার ঐতিহ্যবাহী মিষ্টি",
     titlePrimary: "অকৃত্রিম স্বাদ ও মনমাতানো ঘ্রাণ",
     titleHighlight: "প্রাকৃতিক খাঁটি তালের গুড়",
-    description: "গাছের খাঁটি তালের রস কাঠের আগুনে ঘণ্টার পর ঘণ্টা জ্বাল দিয়ে প্রস্তুতকৃত নির্ভেজাল ও সুস্বাদু তালের পাটালি ও দানাদার গুড়।",
-    image: "https://sadervubon.com/wp-content/uploads/2025/05/6fc90ced-cce5-4276-bbd3-46f4c1d87841.jpeg",
-    imageTag: "AUTHENTIC TALER GUR",
-    imageTitle: "গ্রামের আসল সুস্বাদু তালের গুড়",
+    description: "গাছের খাঁটি তালের রস কাঠের আগুনে ঘণ্টার পর ঘণ্টা জ্বাল দিয়ে প্রস্তুতকৃত নির্ভেজাল ও সুস্বাদু তালের পাটালি, দানাদার ও চকলেট গুড়।",
+    image: "https://sadervubon.com/wp-content/uploads/2025/04/WhatsApp-Image-2025-04-23-at-11.36.15_8e65ba83-scaled.jpg",
+    imageTag: "TALER CHOCOLATE GUR",
+    imageTitle: "সুস্বাদু ঐতিহ্যবাহী তালের চকলেট গুড়",
     btnPrimaryText: "তালের গুড় কিনুন",
     btnPrimaryLink: "/category/taler-gur",
     btnSecondaryText: "সকল গুড় কালেকশন",
-    btnSecondaryLink: "/category/gur",
+    btnSecondaryLink: "/category/khejur-gur",
   },
   {
-    badge: "🥭 জিভে জল আনা স্পেশাল রেসিপি",
+    badge: "জিভে জল আনা স্পেশাল রেসিপি",
     titlePrimary: "টক-মিষ্টি-ঝাল ঘরোয়া স্বাদ",
     titleHighlight: "মুখরোচক আমসত্ত্বের আচার",
-    description: "রোদে শুকানো খাঁটি আমসত্ত্ব, কাঠের ঘানির সরিষার তেল ও বাছাইকৃত পাঁচফোড়ন মসলায় তৈরি ঐতিহ্যবাহী ঘরোয়া আমসত্ত্বের আচার।",
+    description: "রোদে শুকানো খাঁটি আমসত্ত্ব, কাঠের ঘানির সরিষার তেল ও বাছাইকৃত খাঁটি মসলায় তৈরি ঐতিহ্যবাহী ঘরোয়া আমসত্ত্বের আচার।",
     image: "https://sadervubon.com/wp-content/uploads/2025/08/DSC05987-scaled.jpg",
     imageTag: "AMSHOTTER ACHAR",
     imageTitle: "ঘরোয়া পরিবেশে রোদে শুকিয়ে তৈরি",
@@ -60,13 +60,13 @@ const slides: HeroSlide[] = [
     btnSecondaryLink: "/category/pickle",
   },
   {
-    badge: "🍯 সেরা সাশ্রয়ী প্যাকেজ",
+    badge: "সেরা সাশ্রয়ী প্যাকেজ",
     titlePrimary: "রোগ প্রতিরোধে প্রাকৃতিক মহৌষধ",
     titleHighlight: "খাঁটি মধু কম্বো প্যাকেজ (Honey Combo)",
     description: "সুন্দরবনের খলিসা, গরান ও কালোজিরা ফুলের ১০০% অপরিশোধিত ও খাঁটি চাকের মধুর বিশেষ সাশ্রয়ী কম্বো অফার।",
-    image: "https://sadervubon.com/wp-content/uploads/2023/10/k-honey.jpg",
-    imageTag: "HONEY COMBO PACK",
-    imageTitle: "১০০% প্রাকৃতিক খাঁটি চাকভাঙা মধু কম্বো",
+    image: "https://sadervubon.com/wp-content/uploads/2026/11/honey-image-1.webp",
+    imageTag: "100% PURE HONEY",
+    imageTitle: "১০০% প্রাকৃতিক মধু",
     btnPrimaryText: "মধু কম্বো কিনুন",
     btnPrimaryLink: "/category/offer",
     btnSecondaryText: "সকল মধু কালেকশন",
@@ -117,7 +117,7 @@ export function HeroSlider() {
 
   return (
     <div
-      className="relative overflow-hidden bg-gradient-to-b from-[#fbf9f4] via-[#f7f5ed] to-[#ffffff] pt-4 pb-8 sm:py-12 lg:py-16 select-none"
+      className="relative overflow-hidden bg-gradient-to-b from-[#fbf9f4] via-[#f7f5ed] to-[#ffffff] pt-3 pb-6 sm:py-12 lg:py-16 select-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -147,25 +147,26 @@ export function HeroSlider() {
                     : "opacity-0 translate-x-8 pointer-events-none z-0 invisible"
                 }`}
               >
-                <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
-                  {/* Left Column: Text & CTAs */}
-                  <div className="lg:col-span-7 flex flex-col justify-center text-left">
+                <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-center">
+                  {/* Left Column: Text & CTAs (On mobile: order-2, on desktop: order-1) */}
+                  <div className="lg:col-span-6 flex flex-col justify-center text-left order-2 lg:order-1">
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm border border-emerald-200/90 text-emerald-800 text-xs sm:text-sm font-extrabold px-3.5 py-1.5 rounded-full shadow-xs w-max mb-3">
+                    <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm border border-emerald-200/90 text-emerald-800 text-xs sm:text-sm font-extrabold px-3.5 py-1.5 rounded-full shadow-xs w-max mb-3">
                       <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                       <span>{slide.badge}</span>
                     </div>
 
-                    {/* Headings */}
-                    <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-[44px] font-black text-gray-900 leading-[1.25] tracking-tight mb-2">
-                      {slide.titlePrimary} <br className="hidden sm:inline" />
+                    {/* Headings with Balanced Bengali Typography Line-Height */}
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] xl:text-[44px] font-black text-gray-900 leading-[1.26] sm:leading-[1.28] lg:leading-[1.3] mb-3 sm:mb-4">
+                      <span>{slide.titlePrimary}</span>{" "}
+                      <br className="hidden sm:inline" />
                       <span className="bg-gradient-to-r from-emerald-800 via-emerald-700 to-amber-600 bg-clip-text text-transparent">
                         {slide.titleHighlight}
                       </span>
                     </h1>
 
                     {/* Subtitle */}
-                    <p className="text-xs sm:text-base md:text-lg text-gray-600 font-medium leading-relaxed mb-4 sm:mb-6 max-w-xl">
+                    <p className="text-xs sm:text-base text-gray-600 font-medium leading-relaxed mb-5 max-w-lg">
                       {slide.description}
                     </p>
 
@@ -173,6 +174,7 @@ export function HeroSlider() {
                     <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 pt-1">
                       <Link
                         href={slide.btnPrimaryLink}
+                        prefetch={true}
                         className="group/btn relative overflow-hidden inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#063b23] via-[#0d6437] to-[#063b23] hover:from-[#09472b] hover:via-[#117641] hover:to-[#09472b] text-white font-extrabold text-xs sm:text-base px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.32),0_4px_12px_rgba(6,59,35,0.22)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_8px_20px_rgba(6,59,35,0.32)] border border-emerald-600/30 hover:border-emerald-400/50 hover:scale-[1.02] active:scale-95 transition-all duration-300"
                       >
                         <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
@@ -182,21 +184,22 @@ export function HeroSlider() {
 
                       <Link
                         href={slide.btnSecondaryLink}
-                        className="inline-flex items-center justify-center gap-2 bg-white/90 hover:bg-white text-gray-800 hover:text-amber-600 font-extrabold text-xs sm:text-base px-5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl border border-gray-200 hover:border-amber-400 shadow-xs hover:shadow-md transition-all duration-300 hover:scale-[1.02] active:scale-95"
+                        prefetch={true}
+                        className="inline-flex items-center justify-center gap-2 bg-white/95 hover:bg-white text-gray-800 hover:text-amber-600 font-extrabold text-xs sm:text-base px-5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl border border-gray-200 hover:border-amber-400 shadow-xs hover:shadow-md transition-all duration-300 hover:scale-[1.02] active:scale-95"
                       >
                         <span>{slide.btnSecondaryText}</span>
                       </Link>
                     </div>
 
                     {/* Small Trust Metrics */}
-                    <div className="flex items-center gap-4 sm:gap-8 mt-5 sm:mt-7 pt-4 sm:pt-5 border-t border-gray-200/60 text-xs sm:text-sm text-gray-600">
+                    <div className="flex items-center gap-4 sm:gap-7 mt-5 sm:mt-6 pt-4 border-t border-gray-200/60 text-xs sm:text-sm text-gray-600">
                       <div className="flex items-center gap-1.5 font-bold text-gray-800">
                         <ShieldCheck className="w-4 h-4 text-emerald-600" />
                         <span>১০০% খাঁটি পণ্য</span>
                       </div>
                       <div className="flex items-center gap-1.5 font-bold text-gray-800">
                         <Award className="w-4 h-4 text-amber-500" />
-                        <span>সেরা মান নিয়ন্ত্রণ</span>
+                        <span>সেরা মানের নিশ্চয়তা</span>
                       </div>
                       <div className="hidden sm:flex items-center gap-1.5 font-bold text-gray-800">
                         <span className="text-emerald-700 font-black">★ 4.9/5</span>
@@ -205,32 +208,36 @@ export function HeroSlider() {
                     </div>
                   </div>
 
-                  {/* Right Column: Hero Visual Card with Glowing Accent */}
-                  <div className="lg:col-span-5 relative mt-4 lg:mt-0">
-                    <div className="relative mx-auto w-full max-w-[340px] sm:max-w-[420px] aspect-[16/10] sm:aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-white/80 group">
+                  {/* Right Column: Hero Visual Card (On mobile: order-1 so image is at the top, on desktop: order-2) */}
+                  <div className="lg:col-span-6 relative flex justify-center lg:justify-end order-1 lg:order-2">
+                    {/* Glowing Accent Aura */}
+                    <div className="absolute -inset-3 bg-gradient-to-tr from-amber-400/20 via-emerald-500/20 to-transparent rounded-3xl blur-xl -z-10 pointer-events-none" />
+
+                    <div className="relative w-full max-w-[480px] sm:max-w-[540px] lg:max-w-[580px] xl:max-w-[620px] aspect-[5/4] sm:aspect-[16/10] lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/90 group bg-gray-100">
                       <Image
                         src={slide.image}
                         alt={slide.imageTitle}
                         fill
                         priority={index === 0}
-                        sizes="(max-width: 1024px) 100vw, 420px"
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 540px, 620px"
+                        className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
                       />
 
-                      {/* Subtle Dark Gradient Overlay at Bottom */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 sm:p-6 text-white">
-                        <span className="inline-flex items-center gap-1 bg-amber-500 text-gray-950 text-[10px] sm:text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider w-max mb-1.5 shadow-md">
-                          {slide.imageTag}
-                        </span>
-                        <h4 className="text-sm sm:text-lg font-black leading-snug drop-shadow-sm">
-                          {slide.imageTitle}
-                        </h4>
+                      {/* Floating Discount/Purity Tag (Top Right) */}
+                      <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 bg-white/95 backdrop-blur-md px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-md border border-emerald-100 flex items-center gap-1.5 z-10">
+                        <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-ping" />
+                        <span className="text-[10px] sm:text-xs font-black text-emerald-900 tracking-wide">VERIFIED PURE</span>
                       </div>
 
-                      {/* Floating Discount/Purity Tag */}
-                      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white/95 backdrop-blur-md px-3 py-1 rounded-2xl shadow-lg border border-emerald-100 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                        <span className="text-[11px] sm:text-xs font-black text-emerald-900">VERIFIED PURE</span>
+                      {/* Bottom Glass Caption Pill - Centered & auto-width to fit text perfectly */}
+                      <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 w-max max-w-[92%] bg-black/60 sm:bg-black/75 backdrop-blur-md rounded-full px-3.5 sm:px-5 py-1 sm:py-2 text-white border border-white/20 flex items-center justify-center gap-2 shadow-xl z-10 pointer-events-none">
+                        <span className="inline-block text-[9px] sm:text-xs font-black text-amber-400 uppercase tracking-wider shrink-0">
+                          {slide.imageTag}
+                        </span>
+                        <span className="text-white/40 text-[10px] sm:text-xs shrink-0">•</span>
+                        <h4 className="text-[11px] sm:text-sm font-bold truncate text-white drop-shadow-sm text-center">
+                          {slide.imageTitle}
+                        </h4>
                       </div>
                     </div>
                   </div>
@@ -241,7 +248,7 @@ export function HeroSlider() {
         </div>
 
         {/* Carousel Navigation Arrows & Indicators */}
-        <div className="flex items-center justify-between pt-6 sm:pt-8">
+        <div className="flex items-center justify-between pt-3 sm:pt-8">
           {/* Dot Indicators */}
           <div className="flex items-center gap-2">
             {slides.map((_, idx) => (
@@ -259,20 +266,20 @@ export function HeroSlider() {
           </div>
 
           {/* Prev / Next Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={prevSlide}
               aria-label="পূর্ববর্তী স্লাইড"
-              className="w-10 h-10 rounded-full bg-white hover:bg-emerald-800 hover:text-white text-gray-700 border border-gray-200 shadow-sm flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-90"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-emerald-800 hover:text-white text-gray-700 border border-gray-200 shadow-sm flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-90"
             >
-              <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
             </button>
             <button
               onClick={nextSlide}
               aria-label="পরবর্তী স্লাইড"
-              className="w-10 h-10 rounded-full bg-white hover:bg-emerald-800 hover:text-white text-gray-700 border border-gray-200 shadow-sm flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-90"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-emerald-800 hover:text-white text-gray-700 border border-gray-200 shadow-sm flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-90"
             >
-              <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
             </button>
           </div>
         </div>

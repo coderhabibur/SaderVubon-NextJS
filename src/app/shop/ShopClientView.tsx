@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   ShoppingBag,
@@ -8,6 +8,9 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ArrowUpDown,
+  Check,
 } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { ShopFilterSidebar } from "@/components/ShopFilterSidebar";
@@ -35,6 +38,13 @@ interface ShopClientViewProps {
   currentPage?: number;
 }
 
+const SORT_OPTIONS = [
+  { value: "newest", label: "নতুন পণ্য" },
+  { value: "popularity", label: "জনপ্রিয় পণ্য" },
+  { value: "price_asc", label: "দাম: কম ➔ বেশি" },
+  { value: "price_desc", label: "দাম: বেশি ➔ কম" },
+];
+
 export function ShopClientView({
   categories,
   attributes = [],
@@ -61,8 +71,27 @@ export function ShopClientView({
   const [totalPages, setTotalPages] = useState<number>(initialTotalPages);
   const [totalCount, setTotalCount] = useState<number>(initialTotal || initialProducts.length);
   const [loading, setLoading] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
   const gridTopRef = useRef<HTMLDivElement>(null);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close sort dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+        setSortDropdownOpen(false);
+      }
+    };
+    if (sortDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [sortDropdownOpen]);
+
+  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === sort)?.label || "নতুন পণ্য";
 
   // AJAX Fetch Handler
   const fetchFilteredProducts = async (
@@ -72,7 +101,8 @@ export function ShopClientView({
     newSort: string,
     newAttr: string,
     newTerm: string,
-    targetPage = 1
+    targetPage = 1,
+    shouldScroll = false
   ) => {
     setLoading(true);
     setCategory(newCategory);
@@ -98,6 +128,7 @@ export function ShopClientView({
     const queryString = params.toString();
     const newUrl = `/shop${queryString ? `?${queryString}` : ""}`;
     window.history.pushState(null, "", newUrl);
+    window.dispatchEvent(new Event("popstate"));
 
     try {
       const apiUrl = `/api/products?${queryString}&per_page=12`;
@@ -114,15 +145,18 @@ export function ShopClientView({
       console.error("AJAX filter/pagination failed:", err);
     } finally {
       setLoading(false);
-      // Scroll to grid top smoothly accounting for sticky header
-      if (gridTopRef.current) {
+      // Only scroll when explicitly needed (e.g. pagination clicks from the bottom)
+      // Never scroll on filter clicks to avoid jitter / layout jump
+      if (shouldScroll && gridTopRef.current) {
         const headerOffset = window.innerWidth >= 1024 ? 165 : 110;
         const elementPosition = gridTopRef.current.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        window.scrollTo({
-          top: Math.max(0, offsetPosition),
-          behavior: "smooth",
-        });
+        if (Math.abs(window.pageYOffset - offsetPosition) > 100) {
+          window.scrollTo({
+            top: Math.max(0, offsetPosition),
+            behavior: "smooth",
+          });
+        }
       }
     }
   };
@@ -139,21 +173,46 @@ export function ShopClientView({
     const updatedMax = newMax !== undefined ? newMax : maxPrice;
     const updatedAttr = newAttr !== undefined ? newAttr : attribute;
     const updatedTerm = newTerm !== undefined ? newTerm : attributeTerm;
-    // Reset to page 1 when filters change
-    fetchFilteredProducts(updatedCat, updatedMin, updatedMax, sort, updatedAttr, updatedTerm, 1);
+    // Reset to page 1 when filters change (no page jump)
+    fetchFilteredProducts(updatedCat, updatedMin, updatedMax, sort, updatedAttr, updatedTerm, 1, false);
   };
 
-  const handleSortChange = (e: React.MouseEvent, newSort: string) => {
-    e.preventDefault();
+  const handleSortChange = (newSort: string) => {
     if (newSort === sort) return;
-    // Reset to page 1 when sort changes
-    fetchFilteredProducts(category, minPrice, maxPrice, newSort, attribute, attributeTerm, 1);
+    // Reset to page 1 when sort changes (no page jump)
+    fetchFilteredProducts(category, minPrice, maxPrice, newSort, attribute, attributeTerm, 1, false);
   };
 
   const handlePageChange = (page: number) => {
     if (page === currentPage || page < 1 || page > totalPages || loading) return;
-    fetchFilteredProducts(category, minPrice, maxPrice, sort, attribute, attributeTerm, page);
+    fetchFilteredProducts(category, minPrice, maxPrice, sort, attribute, attributeTerm, page, true);
   };
+
+  // Sync with initial URL search params on mount if directly loaded with query params
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const urlCat = params.get("category");
+    const urlMin = params.get("min_price") || "";
+    const urlMax = params.get("max_price") || "";
+    const urlSort = params.get("sort") || "newest";
+    const urlAttr = params.get("attribute") || "";
+    const urlTerm = params.get("attribute_term") || "";
+    const urlPage = parseInt(params.get("page") || "1", 10);
+
+    if (urlCat || urlMin || urlMax || urlSort !== "newest" || urlAttr || urlTerm || urlPage > 1) {
+      fetchFilteredProducts(
+        urlCat || initialCategory,
+        urlMin,
+        urlMax,
+        urlSort,
+        urlAttr,
+        urlTerm,
+        urlPage,
+        false
+      );
+    }
+  }, []);
 
   const hasActiveFilters =
     (category && category !== "all") || minPrice || maxPrice || attributeTerm;
@@ -254,50 +313,79 @@ export function ShopClientView({
             )}
           </div>
 
-          {/* Sort Controls (AJAX Enabled) */}
-          <div className="flex items-center gap-2 shrink-0 text-xs sm:text-sm">
-            <span className="text-gray-500 font-medium hidden sm:inline">সাজান:</span>
-            <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
-              <button
-                type="button"
-                onClick={(e) => handleSortChange(e, "newest")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  sort === "newest"
-                    ? "bg-white text-gray-900 shadow-2xs"
-                    : "text-gray-600 hover:text-gray-900"
+          {/* Custom Sort Dropdown (Luxury Brand Styled) */}
+          <div ref={sortDropdownRef} className="relative flex items-center gap-2 shrink-0">
+            <span className="text-xs sm:text-sm font-semibold text-gray-500 hidden sm:inline-flex items-center gap-1.5">
+              <ArrowUpDown className="w-3.5 h-3.5 text-emerald-800" />
+              <span>সাজান:</span>
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setSortDropdownOpen((prev) => !prev)}
+              aria-haspopup="listbox"
+              aria-expanded={sortDropdownOpen}
+              className={`inline-flex items-center justify-between gap-2.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer select-none border shadow-2xs ${
+                sortDropdownOpen
+                  ? "bg-white text-emerald-900 border-emerald-600 ring-2 ring-emerald-600/20"
+                  : "bg-white hover:bg-gray-50 text-gray-800 border-gray-200/90 hover:border-emerald-300"
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                <span className="sm:hidden text-emerald-800">
+                  <ArrowUpDown className="w-3.5 h-3.5" />
+                </span>
+                <span className="text-gray-900 font-extrabold">{currentSortLabel}</span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                  sortDropdownOpen ? "rotate-180 text-emerald-700" : ""
                 }`}
+              />
+            </button>
+
+            {/* Custom Floating Menu */}
+            {sortDropdownOpen && (
+              <div
+                role="listbox"
+                className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl shadow-emerald-950/10 border border-emerald-100 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 ease-out"
               >
-                নতুন পণ্য
-              </button>
-              <button
-                type="button"
-                onClick={(e) => handleSortChange(e, "price_asc")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  sort === "price_asc"
-                    ? "bg-white text-gray-900 shadow-2xs"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                দাম: কম ➔ বেশি
-              </button>
-              <button
-                type="button"
-                onClick={(e) => handleSortChange(e, "price_desc")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                  sort === "price_desc"
-                    ? "bg-white text-gray-900 shadow-2xs"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                দাম: বেশি ➔ কম
-              </button>
-            </div>
+                <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-850/80 border-b border-gray-100 mb-1">
+                  পণ্য সাজানোর ক্রম
+                </div>
+                {SORT_OPTIONS.map((option) => {
+                  const isSelected = sort === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        handleSortChange(option.value);
+                        setSortDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-left ${
+                        isSelected
+                          ? "bg-gradient-to-r from-emerald-50 to-emerald-100/60 text-emerald-900 font-extrabold shadow-2xs"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-emerald-900"
+                      }`}
+                    >
+                      <span>{option.label}</span>
+                      {isSelected && (
+                        <Check className="w-4 h-4 text-emerald-700 stroke-[2.5]" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Product Cards Grid with Smooth Transition */}
         {products.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-gray-200/80 p-12 text-center shadow-xs">
+          <div className="bg-white rounded-3xl border border-gray-200/80 p-12 text-center shadow-xs min-h-[450px] flex flex-col items-center justify-center">
             <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center mx-auto mb-4 border border-emerald-100">
               <ShoppingBag className="w-8 h-8 stroke-[1.8]" />
             </div>
@@ -317,7 +405,7 @@ export function ShopClientView({
           </div>
         ) : (
           <div
-            className={`grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 transition-opacity duration-200 ${
+            className={`grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 transition-opacity duration-200 min-h-[500px] ${
               loading ? "opacity-40 pointer-events-none" : "opacity-100"
             }`}
           >

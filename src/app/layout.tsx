@@ -10,6 +10,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { getNavigationMenu } from "@/lib/woocommerce";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -86,11 +87,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navItems = await getNavigationMenu();
   // Organization & WebSite JSON-LD
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -150,7 +152,7 @@ export default function RootLayout({
               <Suspense fallback={null}>
                 <ScrollToTop />
               </Suspense>
-              <Header />
+              <Header navItems={navItems} />
               <main className="flex-1 flex flex-col pb-16 md:pb-0">
                 {children}
               </main>

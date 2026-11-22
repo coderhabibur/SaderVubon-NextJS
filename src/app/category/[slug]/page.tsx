@@ -3,14 +3,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { ShopClientView } from "@/app/shop/ShopClientView";
-import { getFilteredProductsWithPagination, getLiveCategories, getLiveAttributesWithTerms, LiveProduct } from "@/lib/woocommerce";
+import { getFilteredProductsWithPagination, getLiveCategories, getLiveAttributesWithTerms, LiveProduct, findCategoryBySlugOrName } from "@/lib/woocommerce";
 import { siteConfig } from "@/config/site";
 
 export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const supportedSlugs = ["gur", "honey", "oil", "pickle", "mango", "offer", "all-products", "taler-gur"];
+  const supportedSlugs = ["gur", "khejur-gur", "akher-gur", "taler-gur", "honey", "oil", "pickle", "mango", "offer", "all-products"];
   try {
     const liveCats = await getLiveCategories();
     const allSlugs = new Set([...supportedSlugs, ...liveCats.map((c) => c.slug)]);
@@ -28,8 +28,16 @@ interface CategoryPageProps {
 
 const CATEGORY_NAMES_BN: Record<string, { title: string; subtitle: string }> = {
   gur: {
-    title: "খেজুর ও আখের খাঁটি গুড়",
-    subtitle: "যশোরের ঐতিহ্যবাহী দানাদার ও ঝোলা খেজুরের গুড় এবং অর্গানিক আখের গুড়। কোনো প্রকার চিনি বা হাইড্রোজ ছাড়া ১০০% খাঁটি।",
+    title: "খাঁটি খেজুরের গুড়",
+    subtitle: "যশোরের ঐতিহ্যবাহী দানাদার, পাটালি ও ঝোলা খেজুরের গুড়। কোনো প্রকার চিনি বা হাইড্রোজ ছাড়া ১০০% খাঁটি।",
+  },
+  "khejur-gur": {
+    title: "খাঁটি খেজুরের গুড়",
+    subtitle: "যশোরের ঐতিহ্যবাহী দানাদার, পাটালি ও ঝোলা খেজুরের গুড়। কোনো প্রকার চিনি বা হাইড্রোজ ছাড়া ১০০% খাঁটি।",
+  },
+  "akher-gur": {
+    title: "ঐতিহ্যবাহী খাঁটি আখের গুড়",
+    subtitle: "সম্পূর্ণ প্রাকৃতিকভাবে তৈরি অর্গানিক ও নির্ভেজাল আখের গুড়। কোনো কেমিক্যাল ছাড়া ১০০% খাঁটি।",
   },
   "taler-gur": {
     title: "ঐতিহ্যবাহী খাঁটি তালের গুড়",
@@ -63,11 +71,24 @@ const CATEGORY_NAMES_BN: Record<string, { title: string; subtitle: string }> = {
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
-  const bnInfo = CATEGORY_NAMES_BN[decodedSlug.toLowerCase()];
+  let decodedSlug = slug;
+  try {
+    decodedSlug = decodeURIComponent(slug);
+  } catch {}
 
-  const title = bnInfo ? `${bnInfo.title} | স্বাদের ভুবন` : `${decodedSlug} ক্যাটাগরি | স্বাদের ভুবন`;
-  const description = bnInfo?.subtitle || "স্বাদের ভুবনের ১০০% খাঁটি ও প্রাকৃতিক খাদ্য সামগ্রী।";
+  const categories = await getLiveCategories();
+  const currentCat = findCategoryBySlugOrName(categories, decodedSlug);
+
+  const bnInfo =
+    CATEGORY_NAMES_BN[decodedSlug.toLowerCase()] ||
+    (currentCat ? CATEGORY_NAMES_BN[currentCat.slug.toLowerCase()] : null);
+
+  const title = currentCat?.name
+    ? `${currentCat.name} | স্বাদের ভুবন`
+    : bnInfo
+    ? `${bnInfo.title} | স্বাদের ভুবন`
+    : `${decodedSlug} ক্যাটাগরি | স্বাদের ভুবন`;
+  const description = bnInfo?.subtitle || `${currentCat?.name || decodedSlug} - স্বাদের ভুবনের ১০০% খাঁটি ও প্রাকৃতিক খাদ্য সামগ্রী।`;
   const catUrl = `${siteConfig.url}/category/${encodeURIComponent(decodedSlug)}`;
 
   return {
@@ -101,17 +122,17 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
+  let decodedSlug = slug;
+  try {
+    decodedSlug = decodeURIComponent(slug);
+  } catch {}
 
   const [categories, attributes] = await Promise.all([
     getLiveCategories(),
     getLiveAttributesWithTerms(),
   ]);
-  const currentCat = categories.find(
-    (c) => c.slug.toLowerCase() === decodedSlug.toLowerCase()
-  );
 
-  // If no category found in WC, still check if it matches our supported slugs
+  const currentCat = findCategoryBySlugOrName(categories, decodedSlug);
   const categoryId = currentCat?.id;
 
   const { products, total, totalPages, currentPage } = await getFilteredProductsWithPagination({
@@ -122,21 +143,23 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     per_page: 12,
   });
 
-  const bnInfo = CATEGORY_NAMES_BN[decodedSlug.toLowerCase()] || {
-    title: currentCat?.name || decodedSlug,
-    subtitle: "স্বাদের ভুবনের ১০০% খাঁটি ও ভেজালমুক্ত প্রাকৃতিক পণ্য।",
-  };
+  const bnInfo =
+    (currentCat ? CATEGORY_NAMES_BN[currentCat.slug.toLowerCase()] : null) ||
+    CATEGORY_NAMES_BN[decodedSlug.toLowerCase()] || {
+      title: currentCat?.name || decodedSlug,
+      subtitle: "স্বাদের ভুবনের ১০০% খাঁটি ও ভেজালমুক্ত প্রাকৃতিক পণ্য।",
+    };
 
   return (
     <div className="bg-gray-50 min-h-screen py-6 sm:py-10">
       <div className="container mx-auto px-4 lg:px-8">
         {/* 1. Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
-          <Link href="/" className="hover:text-brand-green transition">
+          <Link href="/" prefetch={true} className="hover:text-brand-green transition">
             হোম
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-          <Link href="/shop" className="hover:text-brand-green transition">
+          <Link href="/shop" prefetch={true} className="hover:text-brand-green transition">
             শপ
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" />

@@ -30,13 +30,13 @@ export function WhyChooseUs() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-[#faf9f5] to-white relative overflow-hidden">
+    <section className="py-10 sm:py-16 lg:py-20 bg-gradient-to-b from-white via-[#faf9f5] to-white relative overflow-hidden">
       {/* Decorative Background Shapes */}
       <div className="absolute top-0 right-0 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-200/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
           {/* Left Text & Cards */}
           <div className="lg:col-span-7">
             <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200/80 px-4 py-1.5 rounded-full mb-4 shadow-xs">

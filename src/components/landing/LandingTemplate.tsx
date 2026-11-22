@@ -49,7 +49,7 @@ export function LandingTemplate({ config }: LandingTemplateProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [deliveryZone, setDeliveryZone] = useState<"inside_dhaka" | "outside_dhaka">("inside_dhaka");
+  const [deliveryZone, setDeliveryZone] = useState<"inside_dhaka" | "outside_dhaka" | "inside_rajshahi">("inside_dhaka");
   const [customerNote, setCustomerNote] = useState("");
 
   // UI state
@@ -145,7 +145,13 @@ export function LandingTemplate({ config }: LandingTemplateProps) {
     (item) => item.product.badge === "ফ্রি ডেলিভারি"
   );
   const isFreeShipping = hasFreeDeliveryItem || subtotal >= 2500;
-  const shippingFee = isFreeShipping ? 0 : deliveryZone === "inside_dhaka" ? 70 : 130;
+  const shippingFee = isFreeShipping
+    ? 0
+    : deliveryZone === "inside_dhaka"
+    ? 80
+    : deliveryZone === "inside_rajshahi"
+    ? 50
+    : 100;
   const grandTotal = subtotal + shippingFee;
 
   // Order Submission
@@ -193,7 +199,12 @@ export function LandingTemplate({ config }: LandingTemplateProps) {
           name: name.trim(),
           phone: cleanPhone,
           address: address.trim(),
-          city: deliveryZone === "inside_dhaka" ? "Dhaka" : "Outside Dhaka",
+          city:
+            deliveryZone === "inside_dhaka"
+              ? "Dhaka"
+              : deliveryZone === "inside_rajshahi"
+              ? "Rajshahi"
+              : "Outside Dhaka",
           deliveryZone,
           customerNote: customerNote.trim(),
           items: payloadItems,
@@ -504,34 +515,49 @@ export function LandingTemplate({ config }: LandingTemplateProps) {
                     <label className="block text-xs font-bold text-gray-700 mb-1.5">
                       ডেলিভারি এরিয়া সিলেক্ট করুন <span className="text-red-500">*</span>
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden divide-y divide-gray-200 shadow-2xs">
                       <button
                         type="button"
                         onClick={() => setDeliveryZone("inside_dhaka")}
-                        className={`p-3 rounded-xl border-2 text-left transition cursor-pointer ${
+                        className={`w-full p-3 text-left transition cursor-pointer flex items-center justify-between ${
                           deliveryZone === "inside_dhaka"
-                            ? "border-brand-green bg-emerald-50/50 ring-1 ring-brand-green"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
                         }`}
                       >
-                        <span className="block text-xs font-bold text-gray-900">ঢাকার ভেতরে</span>
-                        <span className="block text-xs font-black text-brand-green mt-0.5">
-                          {isFreeShipping ? "ফ্রি ডেলিভারি" : "৭০৳"}
+                        <span className="text-xs sm:text-sm font-bold text-gray-900">ঢাকার সিটির মধ্যে:</span>
+                        <span className="text-xs sm:text-sm font-black text-brand-green">
+                          {isFreeShipping ? "ফ্রি ডেলিভারি" : "80৳"}
                         </span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setDeliveryZone("outside_dhaka")}
-                        className={`p-3 rounded-xl border-2 text-left transition cursor-pointer ${
+                        className={`w-full p-3 text-left transition cursor-pointer flex items-center justify-between ${
                           deliveryZone === "outside_dhaka"
-                            ? "border-brand-green bg-emerald-50/50 ring-1 ring-brand-green"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
                         }`}
                       >
-                        <span className="block text-xs font-bold text-gray-900">ঢাকার বাইরে</span>
-                        <span className="block text-xs font-black text-brand-green mt-0.5">
-                          {isFreeShipping ? "ফ্রি ডেলিভারি" : "১৩০৳"}
+                        <span className="text-xs sm:text-sm font-bold text-gray-900">ঢাকার সিটির বাইরে:</span>
+                        <span className="text-xs sm:text-sm font-black text-brand-green">
+                          {isFreeShipping ? "ফ্রি ডেলিভারি" : "100৳"}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryZone("inside_rajshahi")}
+                        className={`w-full p-3 text-left transition cursor-pointer flex items-center justify-between ${
+                          deliveryZone === "inside_rajshahi"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
+                        }`}
+                      >
+                        <span className="text-xs sm:text-sm font-bold text-gray-900">রাজশাহীর মধ্যে:</span>
+                        <span className="text-xs sm:text-sm font-black text-brand-green">
+                          {isFreeShipping ? "ফ্রি ডেলিভারি" : "50৳"}
                         </span>
                       </button>
                     </div>

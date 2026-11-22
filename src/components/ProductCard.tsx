@@ -22,6 +22,13 @@ export function ProductCard({ product }: ProductCardProps) {
   const savings = regular > current ? regular - current : 0;
   const isFav = isInWishlist(product.id);
 
+  // Pick the most specific category (ignoring generic categories like "All Products")
+  const displayCategory =
+    product.categories?.find((c) => {
+      const norm = c.name.trim().toLowerCase();
+      return !["all products", "all", "সকল পণ্য", "সকল-পণ্য", "uncategorized"].includes(norm);
+    }) || product.categories?.[0];
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -108,9 +115,9 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
           {/* Category Name */}
-          {product.categories && product.categories[0] && (
+          {displayCategory && (
             <span className="text-[11px] font-bold text-emerald-700 tracking-wider uppercase block mb-1">
-              {product.categories[0].name}
+              {displayCategory.name}
             </span>
           )}
 

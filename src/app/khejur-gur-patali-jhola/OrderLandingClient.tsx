@@ -164,7 +164,7 @@ const FAQS = [
   {
     question: "ডেলিভারি চার্জ কত এবং ফ্রি ডেলিভারি কীভাবে পাওয়া যাবে?",
     answer:
-      "ঢাকার ভেতরে ডেলিভারি চার্জ মাত্র ৭০ টাকা এবং ঢাকার বাইরে সারা দেশে ১৩০ টাকা। তবে 'ফ্রি ডেলিভারি' চিহ্নিত কম্বো বা বিশেষ প্যাকেজগুলো অর্ডার করলে ডেলিভারি সম্পূর্ণ ফ্রি!",
+      "ঢাকার সিটির মধ্যে ডেলিভারি চার্জ ৮০ টাকা, ঢাকার বাইরে সারা দেশে ১০০ টাকা এবং রাজশাহীর মধ্যে মাত্র ৫০ টাকা। তবে 'ফ্রি ডেলিভারি' চিহ্নিত কম্বো বা বিশেষ প্যাকেজগুলো অর্ডার করলে ডেলিভারি সম্পূর্ণ ফ্রি!",
   },
 ];
 
@@ -236,7 +236,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [deliveryZone, setDeliveryZone] = useState<"inside_dhaka" | "outside_dhaka">("inside_dhaka");
+  const [deliveryZone, setDeliveryZone] = useState<"inside_dhaka" | "outside_dhaka" | "inside_rajshahi">("inside_dhaka");
   const [customerNote, setCustomerNote] = useState("");
 
   // UI state
@@ -476,7 +476,13 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
     (item) => item.product.badge === "ফ্রি ডেলিভারি"
   );
   const isFreeShipping = hasFreeDeliveryItem || subtotal >= 2500;
-  const shippingFee = isFreeShipping ? 0 : deliveryZone === "inside_dhaka" ? 70 : 130;
+  const shippingFee = isFreeShipping
+    ? 0
+    : deliveryZone === "inside_dhaka"
+    ? 80
+    : deliveryZone === "inside_rajshahi"
+    ? 50
+    : 100;
   const grandTotal = subtotal + shippingFee;
 
   // Submit Order to API
@@ -525,7 +531,12 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
           name: name.trim(),
           phone: cleanPhone,
           address: address.trim(),
-          city: deliveryZone === "inside_dhaka" ? "Dhaka" : "Outside Dhaka",
+          city:
+            deliveryZone === "inside_dhaka"
+              ? "Dhaka"
+              : deliveryZone === "inside_rajshahi"
+              ? "Rajshahi"
+              : "Outside Dhaka",
           deliveryZone,
           customerNote: customerNote.trim(),
           items: payloadItems,
@@ -670,30 +681,17 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                 style={{ animationDuration: "4s" }}
               />
 
-              {/* Top Center Floating Sparkle Orb */}
-              <div
-                className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 w-8 h-8 rounded-full bg-white shadow-md border border-amber-200 flex items-center justify-center animate-bounce"
-                style={{ animationDuration: "3.5s" }}
-              >
-                <Sparkles className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: "8s" }} />
-              </div>
-
               {/* Luxury Light Frame */}
               <div className="relative rounded-[2rem] sm:rounded-[2.5rem] p-3 sm:p-4.5 bg-white border-2 border-[#E5D4C4] shadow-2xl shadow-[#3B170B]/10">
-                {/* Floating Top Badges (Mobile-friendly: Diagonal placement on mobile to prevent overlap, corner-to-corner on desktop) */}
-                <div className="absolute top-4 sm:top-6 left-4 sm:left-6 z-20 animate-float-slow">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-white/95 border border-amber-200/90 text-[#6B280F] text-[11px] sm:text-xs font-black shadow-lg backdrop-blur-md">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-                    🌾 ১০০% প্রাকৃতিক ও নির্ভেজাল
+                {/* Floating Top Badges (Top Left & Top Right) */}
+                <div className="absolute top-3 sm:top-6 left-3 sm:left-6 z-20 animate-float-slow">
+                  <span className="inline-flex items-center px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white/95 border border-amber-200/90 text-[#6B280F] text-[10px] sm:text-xs font-black shadow-lg backdrop-blur-md">
+                    ১০০% প্রাকৃতিক ও নির্ভেজাল
                   </span>
                 </div>
 
-                <div className="absolute bottom-4 right-4 sm:bottom-auto sm:top-6 sm:right-6 z-20 animate-float-reverse">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#8B3A14] to-[#C25E18] text-white text-[11px] sm:text-xs font-black shadow-lg border border-amber-300/40">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
-                    </span>
+                <div className="absolute top-3 sm:top-6 right-3 sm:right-6 z-20 animate-float-reverse">
+                  <span className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#8B3A14] to-[#C25E18] text-white text-[10px] sm:text-xs font-black shadow-lg border border-amber-300/40">
                     🔥 আজকের তাজা স্টক
                   </span>
                 </div>
@@ -714,38 +712,38 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                 </div>
 
                 {/* Floating Shape 1: 5-Star Premium Quality Card (Bottom Left) */}
-                <div className="hidden sm:flex absolute -bottom-4 -left-3 sm:-bottom-5 sm:-left-5 z-30 p-2.5 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-amber-200/90 shadow-[0_14px_35px_rgba(139,58,20,0.18)] items-center gap-2.5 sm:gap-3 hover:scale-105 transition-all duration-300 cursor-default animate-float-slow">
-                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-[#8B3A14] to-[#C25E18] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#8B3A14]/30">
+                <div className="flex absolute -bottom-3 left-1.5 sm:-bottom-5 sm:-left-5 z-30 p-2 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/95 backdrop-blur-md border border-amber-200/90 shadow-[0_10px_25px_rgba(139,58,20,0.18)] items-center gap-2 sm:gap-3 hover:scale-105 transition-all duration-300 cursor-default animate-float-slow">
+                  <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-[#8B3A14] to-[#C25E18] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#8B3A14]/30">
                     <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 animate-pulse" />
                   </div>
                   <div className="text-left">
-                    <div className="flex items-center gap-1 text-amber-500 text-xs mb-0.5">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <span className="text-[10px] sm:text-[11px] font-black text-gray-800 ml-1">৫.০</span>
+                    <div className="flex items-center gap-0.5 sm:gap-1 text-amber-500 text-[10px] sm:text-xs mb-0.5">
+                      <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />
+                      <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />
+                      <span className="text-[9px] sm:text-[11px] font-black text-gray-800 ml-1">৫.০</span>
                     </div>
-                    <p className="text-xs sm:text-sm font-black text-gray-950 font-heading leading-tight">
+                    <p className="text-[11px] sm:text-sm font-black text-gray-950 font-heading leading-tight">
                       শতভাগ খাঁটি খেজুরের গুড়
                     </p>
-                    <p className="text-[10px] text-emerald-700 font-bold">
+                    <p className="text-[9px] sm:text-[10px] text-emerald-700 font-bold">
                       ✓ প্রিমিয়াম কোয়ালিটি নিশ্চয়তা
                     </p>
                   </div>
                 </div>
 
                 {/* Floating Shape 2: Verified COD Purity Seal (Bottom Right) */}
-                <div className="hidden sm:flex absolute -bottom-4 -right-3 sm:-bottom-5 sm:-right-5 z-30 p-2 sm:p-2.5 rounded-2xl bg-gradient-to-tr from-[#063b23] to-[#0d6437] text-white shadow-[0_14px_30px_rgba(6,59,35,0.25)] border-2 border-emerald-400/40 items-center gap-2 hover:scale-105 transition-all duration-300 cursor-default animate-float-reverse">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center text-amber-300 shrink-0">
-                    <ShieldCheck className="w-4 h-4 text-emerald-300 stroke-[2.5]" />
+                <div className="flex absolute -bottom-3 right-1.5 sm:-bottom-5 sm:-right-5 z-30 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#063b23] to-[#0d6437] text-white shadow-[0_10px_25px_rgba(6,59,35,0.25)] border-2 border-emerald-400/40 items-center gap-1.5 sm:gap-2 hover:scale-105 transition-all duration-300 cursor-default animate-float-reverse">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center text-amber-300 shrink-0">
+                    <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300 stroke-[2.5]" />
                   </div>
-                  <div className="text-left pr-1">
-                    <span className="text-[9px] font-bold text-emerald-200 block uppercase tracking-wider leading-none">
+                  <div className="text-left pr-0.5 sm:pr-1">
+                    <span className="text-[8px] sm:text-[9px] font-bold text-emerald-200 block uppercase tracking-wider leading-none">
                       ক্যাশ অন ডেলিভারি
                     </span>
-                    <span className="text-xs font-black text-white block mt-0.5 leading-tight">
+                    <span className="text-[10px] sm:text-xs font-black text-white block mt-0.5 leading-tight">
                       টেস্ট করে টাকা দিন
                     </span>
                   </div>
@@ -815,10 +813,10 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
       </section>
 
       {/* 4. PRODUCT PRICING & DIRECT ORDER CARDS ("আমাদের গুড়ের মূল্য তালিকা") */}
-      <section className="py-12 sm:py-16 bg-[#faf9f6]">
+      <section className="py-8 sm:py-16 bg-[#faf9f6]">
         <div className="container mx-auto px-4 lg:px-8">
           {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto mb-10">
+          <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10">
             <span className="inline-block px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold border border-amber-300 mb-2">
               খাঁটি ও তাজা স্টক
             </span>
@@ -1021,9 +1019,9 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
       </section>
 
       {/* 5. CUSTOMER REVIEWS & TESTIMONIALS SECTION */}
-      <section className="py-12 sm:py-16 bg-white border-y border-gray-200">
+      <section className="py-8 sm:py-16 bg-white border-y border-gray-200">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-8">
+          <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
             <span className="inline-block px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300 mb-2">
               প্রকৃত ক্রেতাদের অভিজ্ঞতা
             </span>
@@ -1178,7 +1176,7 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
       </section>
 
       {/* 7. THE MAIN 1-PAGE CHECKOUT FORM SECTION */}
-      <section ref={orderFormRef} id="order-form" className="py-12 sm:py-20 bg-[#faf9f6]">
+      <section ref={orderFormRef} id="order-form" className="py-8 sm:py-20 bg-[#faf9f6]">
         <div className="container mx-auto px-4 lg:px-8">
           {/* Main Checkout Container with Luxurious Golden & Forest Green Border - Optimized Width */}
           <div className="max-w-5xl mx-auto bg-white rounded-3xl border-3 border-amber-500 shadow-luxury overflow-hidden">
@@ -1414,56 +1412,94 @@ export function OrderLandingClient({ initialProducts }: { initialProducts?: Funn
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="rounded-2xl border-2 border-gray-200 bg-white overflow-hidden divide-y divide-gray-200 shadow-2xs">
                       {/* Inside Dhaka */}
                       <label
-                        className={`cursor-pointer rounded-xl border-2 p-3.5 flex items-center justify-between transition ${
+                        className={`cursor-pointer px-4 py-3.5 flex items-center justify-between transition ${
                           deliveryZone === "inside_dhaka"
-                            ? "border-brand-green bg-emerald-50/60 shadow-xs"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                           <input
                             type="radio"
                             name="shippingZone"
                             checked={deliveryZone === "inside_dhaka"}
                             onChange={() => setDeliveryZone("inside_dhaka")}
-                            className="w-4 h-4 text-brand-green focus:ring-brand-green"
+                            className="w-4 h-4 text-brand-green focus:ring-brand-green shrink-0 cursor-pointer"
                           />
-                          <div>
-                            <p className="text-sm font-black text-gray-900">ঢাকার সিটির ভেতরে</p>
-                            <p className="text-xs text-gray-500">হোম ডেলিভারি (১-২ দিন)</p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-bold text-gray-900">
+                              ঢাকার সিটির মধ্যে:
+                            </span>
+                            <span className="text-xs text-gray-500 font-normal">
+                              (হোম ডেলিভারি ১-২ দিন)
+                            </span>
                           </div>
                         </div>
-                        <span className="text-sm font-black text-brand-green">
-                          {isFreeShipping ? "ফ্রি" : "৳৭০"}
+                        <span className="text-sm sm:text-base font-black text-brand-green shrink-0 ml-3">
+                          {isFreeShipping ? "ফ্রি" : "80৳"}
                         </span>
                       </label>
 
                       {/* Outside Dhaka */}
                       <label
-                        className={`cursor-pointer rounded-xl border-2 p-3.5 flex items-center justify-between transition ${
+                        className={`cursor-pointer px-4 py-3.5 flex items-center justify-between transition ${
                           deliveryZone === "outside_dhaka"
-                            ? "border-brand-green bg-emerald-50/60 shadow-xs"
-                            : "border-gray-200 bg-white hover:border-gray-300"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                           <input
                             type="radio"
                             name="shippingZone"
                             checked={deliveryZone === "outside_dhaka"}
                             onChange={() => setDeliveryZone("outside_dhaka")}
-                            className="w-4 h-4 text-brand-green focus:ring-brand-green"
+                            className="w-4 h-4 text-brand-green focus:ring-brand-green shrink-0 cursor-pointer"
                           />
-                          <div>
-                            <p className="text-sm font-black text-gray-900">ঢাকার বাইরে সারা দেশে</p>
-                            <p className="text-xs text-gray-500">হোম ডেলিভারি (২-৩ দিন)</p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-bold text-gray-900">
+                              ঢাকার সিটির বাইরে:
+                            </span>
+                            <span className="text-xs text-gray-500 font-normal">
+                              (হোম ডেলিভারি ২-৩ দিন)
+                            </span>
                           </div>
                         </div>
-                        <span className="text-sm font-black text-brand-green">
-                          {isFreeShipping ? "ফ্রি" : "৳১৩০"}
+                        <span className="text-sm sm:text-base font-black text-brand-green shrink-0 ml-3">
+                          {isFreeShipping ? "ফ্রি" : "100৳"}
+                        </span>
+                      </label>
+
+                      {/* Inside Rajshahi */}
+                      <label
+                        className={`cursor-pointer px-4 py-3.5 flex items-center justify-between transition ${
+                          deliveryZone === "inside_rajshahi"
+                            ? "bg-emerald-50/80 font-bold"
+                            : "hover:bg-gray-50/70"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <input
+                            type="radio"
+                            name="shippingZone"
+                            checked={deliveryZone === "inside_rajshahi"}
+                            onChange={() => setDeliveryZone("inside_rajshahi")}
+                            className="w-4 h-4 text-brand-green focus:ring-brand-green shrink-0 cursor-pointer"
+                          />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-bold text-gray-900">
+                              রাজশাহীর মধ্যে:
+                            </span>
+                            <span className="text-xs text-gray-500 font-normal">
+                              (হোম ডেলিভারি ২৪ ঘণ্টা)
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-sm sm:text-base font-black text-brand-green shrink-0 ml-3">
+                          {isFreeShipping ? "ফ্রি" : "50৳"}
                         </span>
                       </label>
                     </div>

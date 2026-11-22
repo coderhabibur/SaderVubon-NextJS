@@ -29,7 +29,7 @@ export function Footer() {
           
           {/* 1. Brand Column */}
           <div>
-            <Link href="/" className="inline-flex items-center gap-3.5 mb-5 group">
+            <Link href="/" prefetch={true} className="inline-flex items-center gap-3.5 mb-5 group">
               <div className="w-14 h-14 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
                 <div className="relative w-full h-full">
                   <Image
@@ -110,31 +110,31 @@ export function Footer() {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/about" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/about" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>আমাদের সম্পর্কে</span>
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/shop" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>সকল পণ্যসমূহ</span>
                 </Link>
               </li>
               <li>
-                <Link href="/category/offer" className="text-amber-300 font-bold hover:text-amber-200 transition-colors flex items-center gap-1.5 group">
+                <Link href="/category/offer" prefetch={true} className="text-amber-300 font-bold hover:text-amber-200 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-1 transition-transform" />
                   <span>🔥 স্পেশাল কম্বো অফার</span>
                 </Link>
               </li>
               <li>
-                <Link href="/track-order" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/track-order" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>অর্ডার ট্র্যাকিং</span>
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/contact" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>যোগাযোগ করুন</span>
                 </Link>
@@ -149,25 +149,25 @@ export function Footer() {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/privacy-policy" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/privacy-policy" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>প্রাইভেসি পলিসি</span>
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/terms" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>শর্তাবলী ও নিয়মাবলি</span>
                 </Link>
               </li>
               <li>
-                <Link href="/refund-policy" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/refund-policy" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>রিফান্ড ও রিটার্ন নীতি</span>
                 </Link>
               </li>
               <li>
-                <Link href="/shipping-policy" className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
+                <Link href="/shipping-policy" prefetch={true} className="text-emerald-150 hover:text-amber-400 transition-colors flex items-center gap-1.5 group">
                   <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   <span>ডেলিভারি সংক্রান্ত তথ্য</span>
                 </Link>

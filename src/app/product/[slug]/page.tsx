@@ -14,7 +14,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   try {
-    const products = await getLiveProducts(30);
+    const products = await getLiveProducts(100);
     return products.map((p) => ({
       slug: p.slug,
     }));
@@ -182,15 +182,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="bg-gray-50 border-b border-gray-200/80 py-3">
         <div className="container mx-auto px-4 lg:px-8">
             <nav className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 overflow-x-auto">
-              <Link href="/" className="hover:text-brand-green flex items-center gap-1 shrink-0">
+              <Link href="/" prefetch={true} className="hover:text-brand-green flex items-center gap-1 shrink-0">
                 <Home className="w-3.5 h-3.5" />
-                <span>Home</span>
+                <span>হোম</span>
               </Link>
               <ChevronRight className="w-3.5 h-3.5 shrink-0" />
 
               {product.categories.length > 0 && (
                 <>
-                  <Link href={`/#${product.categories[0].slug}`} className="hover:text-brand-green shrink-0">
+                  <Link href={`/category/${product.categories[0].slug}`} prefetch={true} className="hover:text-brand-green shrink-0">
                     {product.categories[0].name}
                   </Link>
                   <ChevronRight className="w-3.5 h-3.5 shrink-0" />

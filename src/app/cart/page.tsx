@@ -114,10 +114,10 @@ export default function CartPage() {
         {/* 1. Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs text-gray-500 mb-4 sm:mb-6 font-medium">
           <Link href="/" className="hover:text-brand-green transition">
-            Home
+            হোম
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-          <span className="text-gray-900 font-bold">Shopping Cart</span>
+          <span className="text-gray-900 font-bold">শপিং কার্ট</span>
         </nav>
 
         {/* 2. Page Header */}

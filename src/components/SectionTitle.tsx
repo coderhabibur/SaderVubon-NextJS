@@ -6,7 +6,7 @@ interface SectionTitleProps {
 
 export function SectionTitle({ badge, title, subtitle }: SectionTitleProps) {
   return (
-    <div className="text-center max-w-2xl mx-auto mb-12 relative">
+    <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10 relative">
       {/* Decorative Golden Ambient Glow Behind Badge */}
       <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-32 h-10 bg-amber-400/15 blur-xl pointer-events-none rounded-full" />
 
